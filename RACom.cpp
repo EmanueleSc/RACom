@@ -15,14 +15,21 @@ void RACom::init(int id) {
     Serial.print("Wireless module serial started at ");
     Serial.println(BAUND_RATE);
 
-    //pinMode(A0, OUTPUT); // Connected to Bluetooth vcc
-    //pinMode(A1, OUTPUT); // Connected to pin 34 (command mode enable pin)
-
+    pinMode(SET_PIN, OUTPUT); // Connected to set input
+    
     _bufsize = sizeof(_buffer)/sizeof(char);
     MY_ID = id;
 
     // flush the buffer
     memset(_buffer, 0, _bufsize);
+}
+
+void RACom::comunicationMode() {
+  digitalWrite(SET_PIN, HIGH);
+}
+
+void RACom::commandMode() {
+  digitalWrite(SET_PIN, LOW);
 }
 
 void RACom::testCom() {

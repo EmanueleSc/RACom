@@ -8,13 +8,16 @@
 enum
 {
     BAUND_RATE = 9600,
-    RX = 10,
-    TX = 11
+    RX = 11,
+    TX = 10,
+    SET_PIN = 6
 };
 
 class RACom {
 public:
     void init(int id);
+    void comunicationMode();
+    void commandMode();
     void testCom();
 
 //private:
