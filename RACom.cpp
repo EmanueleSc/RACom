@@ -71,7 +71,7 @@ STEP1:findMyNext();
         }
       }
     }
-    Serial.print("<--- Message received: ");
+    Serial.print("<--- Message received after send: ");
     Serial.println(message);
     
     if(message == "") goto STEP1;
