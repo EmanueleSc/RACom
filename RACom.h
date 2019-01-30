@@ -71,7 +71,7 @@ public:
 
 private:
     void findMyNext();
-    void broadcast();
+    void broadcast(int mit, int succ);
     int getMit(String json);
     int getSucc(String json);
 
