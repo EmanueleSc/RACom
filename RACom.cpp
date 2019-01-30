@@ -110,12 +110,15 @@ void RACom::broadcast(int mit, int succ) {
   JsonObject& root = jsonBuffer.createObject();
   root["mit"] = mit;
   root["succ"] = succ;
-  root.printTo(Serial);
+  //root.printTo(Serial);
   root.printTo(jsonStr);
 
   MySerial.print('@');
   MySerial.print(jsonStr);
   MySerial.print('$');
+
+  Serial.print("<--- Message Sent: ");
+  Serial.println(jsonStr);
 }
 
 int RACom::getMit(String json) {
