@@ -67,9 +67,16 @@ public:
     void comunicationMode();
     void commandMode();
     void testCom();
-    void comunicationAlgorithm();
+    
+    //void comunicationAlgorithm();
+    void comAlgo();
 
 private:
+    // methods for comAlgo
+    void initPhase();
+    void broadcastPhase();
+    void readPhase();
+
     void findMyNext();
     void broadcast(int mit, int succ);
     int getMit(String json);

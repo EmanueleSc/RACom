@@ -2,16 +2,13 @@
 
 SoftwareSerial MySerial (RX, TX);
 
-int initFlag;
+int initFlag = 0;
 int MY_ID;
 int currSucc;
 unsigned long ticksAtStart;
 unsigned long cmdTimeout;
 String message = "";
-
-int bufsize;
-char jsonStr[250];
-StaticJsonBuffer<200> jsonBuffer;
+StaticJsonDocument<200> doc;
 
 
 void RACom::init(int id) {
@@ -23,13 +20,9 @@ void RACom::init(int id) {
     Serial.println(BAUND_RATE);
 
     pinMode(SET_PIN, OUTPUT); // Connected to set input
-    
-    initFlag = 0;
+
     MY_ID = id;
     currSucc = MY_ID;
-
-    bufsize = sizeof(jsonStr)/sizeof(char);
-    memset(jsonStr, 0, bufsize);
 }
 
 void RACom::comunicationMode() {
@@ -49,7 +42,65 @@ void RACom::testCom() {
   }
 }
 
-void RACom::comunicationAlgorithm() {
+void RACom::initPhase() {
+  if(initFlag == 0) {
+    MySerial.flush();
+    startOperation(RING_ROUND_TRIP_TIMEOUT); // for global timeout
+    initFlag = 1;
+  }
+}
+
+void RACom::broadcastPhase() {
+  do 
+  {
+    findMyNext();
+    broadcast(MY_ID, currSucc);
+
+    startOperation(RESPONSE_TIMEOUT); // for response timeout
+    message = "";
+
+    // iterate until response timeout is not expired
+    while(!isOperationTimedOut()) {
+      if(MySerial.available()) {
+        if((char)MySerial.read() == '@') {
+          message = MySerial.readStringUntil('$');
+          break;
+        }
+      }
+    }
+    Serial.print("<--- Message received after broadcast: ");
+    Serial.println(message);
+
+  } 
+  while(message == "");
+}
+
+void RACom::readPhase() {
+  if(!isOperationTimedOut()) {
+    if(MySerial.available()) {
+
+      if((char)MySerial.read() == '@') {
+        message = MySerial.readStringUntil('$');
+        MySerial.flush();
+        Serial.print("<--- Message received: ");
+        Serial.println(message);
+        if(getSucc(message) == MY_ID) broadcastPhase();
+      }
+
+      startOperation(RING_ROUND_TRIP_TIMEOUT); // for global timeout
+    }
+  } else {
+    broadcastPhase();
+  }
+}
+
+void RACom::comAlgo() {
+  initPhase();
+  readPhase();
+}
+
+
+/*void RACom::comunicationAlgorithm() {
 INIT:if(initFlag == 0) {
     MySerial.flush();
     startOperation(RING_ROUND_TRIP_TIMEOUT);
@@ -94,7 +145,7 @@ STEP1:findMyNext();
     }
     else message = "";
   }
-}
+}*/
 
 void RACom::findMyNext() {
   currSucc++;
@@ -105,30 +156,29 @@ void RACom::findMyNext() {
 }
 
 void RACom::broadcast(int mit, int succ) {
-  memset(jsonStr, 0, bufsize);
-
-  JsonObject& root = jsonBuffer.createObject();
-  root["mit"] = mit;
-  root["succ"] = succ;
-  //root.printTo(Serial);
-  root.printTo(jsonStr);
+  String json;
+  doc["mit"] = mit;
+  doc["succ"] = succ;
+  serializeJson(doc, json);
 
   MySerial.print('@');
-  MySerial.print(jsonStr);
+  MySerial.print(json);
   MySerial.print('$');
 
   Serial.print("<--- Message Sent: ");
-  Serial.println(jsonStr);
+  Serial.println(json);
 }
 
 int RACom::getMit(String json) {
-  JsonObject& root = jsonBuffer.parseObject(json);
-  return root["mit"].as<int>();
+  deserializeJson(doc, json);
+  int mit = doc["mit"];
+  return mit;
 }
 
 int RACom::getSucc(String json) {
-  JsonObject& root = jsonBuffer.parseObject(json);
-  return root["succ"].as<int>();
+  deserializeJson(doc, json);
+  int succ = doc["succ"];
+  return succ;
 }
 
 void RACom::startOperation(unsigned long timeout) {
