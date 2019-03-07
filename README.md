@@ -13,8 +13,8 @@ void setup()
       ;
     }
 
-    // Before loading sketch, insert the number of the ANT.
-    wireless.init(1);
+    // Before loading sketch, initialize the library with init method.
+    wireless.init(1, 2); // First param: id of ANT, Second param: number of ANTS
     wireless.comunicationMode();
 }
  
