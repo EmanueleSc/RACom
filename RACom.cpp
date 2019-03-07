@@ -51,8 +51,11 @@ void RACom::initPhase() {
 }
 
 void RACom::broadcastPhase() {
+  bool isMyTurn;
+
   do 
   {
+    isMyTurn = false;
     findMyNext();
     broadcast(MY_ID, currSucc);
 
@@ -62,21 +65,28 @@ void RACom::broadcastPhase() {
     // iterate until response timeout is not expired
     while(!isOperationTimedOut()) {
       if(MySerial.available()) {
+        
         if((char)MySerial.read() == '@') {
           message = MySerial.readStringUntil('$');
+          MySerial.flush();
           break;
         }
+
       }
     }
+
+    if(message != "" && getSucc(message) == MY_ID) {
+      isMyTurn = true;
+    } 
+
     Serial.print("<--- Message received after broadcast: ");
     Serial.println(message);
 
   } 
-  while(message == "");
+  while(message == "" || isMyTurn == true);
 }
 
 void RACom::readPhase() {
-  if(!isOperationTimedOut()) {
     if(MySerial.available()) {
 
       if((char)MySerial.read() == '@') {
@@ -87,17 +97,23 @@ void RACom::readPhase() {
         if(getSucc(message) == MY_ID) broadcastPhase();
       }
 
-      startOperation(RING_ROUND_TRIP_TIMEOUT); // for global timeout
+      startOperation(RING_ROUND_TRIP_TIMEOUT); // Restart global timeout
     }
-  } else {
-    broadcastPhase();
-    startOperation(RING_ROUND_TRIP_TIMEOUT); // for global timeout
-  }
+
 }
 
 void RACom::comAlgo() {
   initPhase();
-  readPhase();
+  
+  // Global timeout
+  if(!isOperationTimedOut()) { 
+    readPhase();
+  }
+  else {
+    broadcastPhase();
+    startOperation(RING_ROUND_TRIP_TIMEOUT); // Restart global timeout
+  } 
+  
 }
 
 
