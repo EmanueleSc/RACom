@@ -66,8 +66,6 @@ public:
     void comunicationMode();
     void commandMode();
     void testCom();
-    
-    //void comunicationAlgorithm();
     void comAlgo();
 
 private:

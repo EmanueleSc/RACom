@@ -122,54 +122,6 @@ void RACom::comAlgo() {
   
 }
 
-
-/*void RACom::comunicationAlgorithm() {
-INIT:if(initFlag == 0) {
-    MySerial.flush();
-    startOperation(RING_ROUND_TRIP_TIMEOUT);
-    initFlag = 1;
-    message = "";
-  }
-
-  if(isOperationTimedOut() && message == "") {
-STEP1:findMyNext();
-    broadcast(MY_ID, currSucc);
-    startOperation(RESPONSE_TIMEOUT);
-    message = "";
-
-    while(!isOperationTimedOut()) {
-      if(MySerial.available()) {
-        if((char)MySerial.read() == '@') {
-          message = MySerial.readStringUntil('$');
-          break;
-        }
-      }
-    }
-    Serial.print("<--- Message received after send: ");
-    Serial.println(message);
-    
-    if(message == "") goto STEP1;
-    if(getMit(message) == currSucc) {
-      initFlag = 0;
-      goto INIT;
-    }
-
-  }
-
-  if(MySerial.available()) {
-    if((char)MySerial.read() == '@') {
-      message = MySerial.readStringUntil('$');
-      
-      Serial.print("<--- Message received: ");
-      Serial.println(message);
-
-      if(getSucc(message) == MY_ID) goto STEP1;
-      initFlag = 0; // else
-    }
-    else message = "";
-  }
-}*/
-
 void RACom::findMyNext() {
   currSucc++;
 
