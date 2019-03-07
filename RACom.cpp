@@ -4,6 +4,7 @@ SoftwareSerial MySerial (RX, TX);
 
 int initFlag = 0;
 int MY_ID;
+int NUM_ANTS; // Number of ants in the antNet
 int currSucc;
 unsigned long ticksAtStart;
 unsigned long cmdTimeout;
@@ -11,7 +12,7 @@ String message = "";
 StaticJsonDocument<200> doc;
 
 
-void RACom::init(int id) {
+void RACom::init(int id, int number_of_ants) {
     MySerial.begin(BAUND_RATE);
     while(!MySerial) {
       ;
@@ -22,6 +23,7 @@ void RACom::init(int id) {
     pinMode(SET_PIN, OUTPUT); // Connected to set input
 
     MY_ID = id;
+    NUM_ANTS = number_of_ants;
     currSucc = MY_ID;
 }
 

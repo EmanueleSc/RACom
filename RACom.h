@@ -52,7 +52,6 @@ STEP1:                  succ <- findMyNext
 
 enum
 {
-    NUM_ANTS = 2, // Number of ants in the antNet
     BAUND_RATE = 9600,
     RX = 11,
     TX = 10,
@@ -63,7 +62,7 @@ enum
 
 class RACom {
 public:
-    void init(int id);
+    void init(int id, int number_of_ants);
     void comunicationMode();
     void commandMode();
     void testCom();
