@@ -76,6 +76,7 @@ void RACom::broadcastPhase() {
     }
 
     if(message != "" && getSucc(message) == MY_ID) {
+      currSucc = MY_ID;
       isMyTurn = true;
     } 
 
@@ -94,7 +95,10 @@ void RACom::readPhase() {
         MySerial.flush();
         Serial.print("<--- Message received: ");
         Serial.println(message);
-        if(getSucc(message) == MY_ID) broadcastPhase();
+        if(getSucc(message) == MY_ID) {
+          currSucc = MY_ID;
+          broadcastPhase();
+        }
       }
 
       startOperation(RING_ROUND_TRIP_TIMEOUT); // Restart global timeout
