@@ -91,6 +91,7 @@ void RACom::readPhase() {
     }
   } else {
     broadcastPhase();
+    startOperation(RING_ROUND_TRIP_TIMEOUT); // for global timeout
   }
 }
 
