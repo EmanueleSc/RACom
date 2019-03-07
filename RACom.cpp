@@ -149,8 +149,7 @@ STEP1:findMyNext();
 
 void RACom::findMyNext() {
   currSucc++;
-
-  if(currSucc > NUM_ANTS) currSucc = 1;
+  if(currSucc >= NUM_ANTS) currSucc = 1;
   if(currSucc == MY_ID) currSucc++;
 
 }
