@@ -57,7 +57,6 @@ void RACom::testCom() {
 
 void RACom::initPhase() {
   if(initFlag == 0) {
-    Serial.println("INIT STATE");
     MySerial.flush();
     startGlobalTimer();
     initFlag = 1;
@@ -66,7 +65,6 @@ void RACom::initPhase() {
 
 void RACom::broadcastPhase() {
   bool isMyTurn;
-  Serial.println("BROADCAST STATE");
   do 
   {
     isMyTurn = false;
@@ -125,7 +123,6 @@ void RACom::comAlgo() {
   
   // Global timeout
   if(!globalTimer_expired) {
-    Serial.println("READY STATE");
     readPhase();
   }
   else {
@@ -226,10 +223,12 @@ void RACom::startResponseTimer() {
 
 static void RACom::globalTimerCallback( TimerHandle_t xTimer )
 {
+  Serial.println("Global Timer Expired");
 	globalTimer_expired = true;
 }
 
 static void RACom::responseTimerCallback( TimerHandle_t xTimer )
 {
+  Serial.println("Response Timer Expired");
 	responseTimer_expired = true;
 }
