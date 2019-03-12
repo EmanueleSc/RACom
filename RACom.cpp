@@ -1,4 +1,7 @@
+// RAMO MASTER
+
 #include "RACom.h"
+
 
 SoftwareSerial MySerial (RX, TX);
 
