@@ -12,10 +12,10 @@ String message = "";
 StaticJsonDocument<200> doc;
 
 /* FreeRtos Staff */
-TickType_t xGlobal_Wait = RING_ROUND_TRIP_TIMEOUT;
+TickType_t xGlobal_Wait;
 TimeOut_t xGlobal_TimeOut;
 
-TickType_t xResponse_Wait = RESPONSE_TIMEOUT;
+TickType_t xResponse_Wait;
 TimeOut_t xResponse_TimeOut;
 
 
@@ -29,6 +29,8 @@ void RACom::init(int id, int number_of_ants) {
 
     pinMode(SET_PIN, OUTPUT); // Connected to set input
 
+    xGlobal_Wait = RING_ROUND_TRIP_TIMEOUT;
+    xResponse_Wait = RESPONSE_TIMEOUT;
     MY_ID = id;
     NUM_ANTS = number_of_ants;
     currSucc = MY_ID;
@@ -53,6 +55,7 @@ void RACom::testCom() {
 
 void RACom::initPhase() {
   if(initFlag == 0) {
+    Serial.println("INIT STATE");
     MySerial.flush();
     //startOperation(RING_ROUND_TRIP_TIMEOUT); // for global timeout
     vTaskSetTimeOutState( &xGlobal_TimeOut );
@@ -62,7 +65,7 @@ void RACom::initPhase() {
 
 void RACom::broadcastPhase() {
   bool isMyTurn;
-
+  Serial.println("BROADCAST STATE");
   do 
   {
     isMyTurn = false;
@@ -126,6 +129,7 @@ void RACom::comAlgo() {
   // Global timeout
   //if(!isOperationTimedOut()) {
   if( xTaskCheckForTimeOut( &xGlobal_TimeOut, &xGlobal_Wait ) == pdFALSE ) {
+    Serial.println("READY STATE");
     readPhase();
   }
   else {
