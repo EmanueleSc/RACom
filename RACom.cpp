@@ -105,6 +105,7 @@ void RACom::broadcastPhase() {
 
 void RACom::readPhase() {
     if(MySerial.available()) {
+      Serial.println("QUALCOSA RICEVUTO..");
 
       if((char)MySerial.read() == '@') {
         message = MySerial.readStringUntil('$');
