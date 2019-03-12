@@ -8,6 +8,7 @@
 
 /* Kernel includes. */
 #include "Arduino_FreeRTOS.h"
+#include "timers.h"
 
 /**
 *
@@ -85,6 +86,12 @@ private:
     void startOperation(unsigned long timeout);
     bool isOperationTimedOut() const;
     unsigned long operationDuration() const;
+
+    void setupTimers();
+    void startGlobalTimer();
+    void startResponseTimer();
+    static void globalTimerCallback(TimerHandle_t xTimer);
+    static void responseTimerCallback(TimerHandle_t xTimer);
 };
 
 #endif

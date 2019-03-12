@@ -12,11 +12,10 @@ String message = "";
 StaticJsonDocument<200> doc;
 
 /* FreeRtos Staff */
-TickType_t xGlobal_Wait;
-TimeOut_t xGlobal_TimeOut;
-
-TickType_t xResponse_Wait;
-TimeOut_t xResponse_TimeOut;
+TimerHandle_t xGlobalTimer;
+TimerHandle_t xResponseTimer;
+bool globalTimer_expired;
+bool responseTimer_expired;
 
 
 void RACom::init(int id, int number_of_ants) {
@@ -29,11 +28,14 @@ void RACom::init(int id, int number_of_ants) {
 
     pinMode(SET_PIN, OUTPUT); // Connected to set input
 
-    xGlobal_Wait = RING_ROUND_TRIP_TIMEOUT;
-    xResponse_Wait = RESPONSE_TIMEOUT;
     MY_ID = id;
     NUM_ANTS = number_of_ants;
     currSucc = MY_ID;
+
+    // Start softweare timers
+    globalTimer_expired = false;
+    responseTimer_expired = false;
+    setupTimers();
 }
 
 void RACom::comunicationMode() {
@@ -57,8 +59,7 @@ void RACom::initPhase() {
   if(initFlag == 0) {
     Serial.println("INIT STATE");
     MySerial.flush();
-    //startOperation(RING_ROUND_TRIP_TIMEOUT); // for global timeout
-    vTaskSetTimeOutState( &xGlobal_TimeOut );
+    startGlobalTimer();
     initFlag = 1;
   }
 }
@@ -72,14 +73,11 @@ void RACom::broadcastPhase() {
     findMyNext();
     broadcast(MY_ID, currSucc);
 
-    //startOperation(RESPONSE_TIMEOUT); // for response timeout
-    vTaskSetTimeOutState( &xResponse_TimeOut );
+    startResponseTimer();
     message = "";
 
     // iterate until response timeout is not expired
-    //while(!isOperationTimedOut()) {
-    
-    while( xTaskCheckForTimeOut( &xResponse_TimeOut, &xResponse_Wait ) == pdFALSE ) {
+    while( !responseTimer_expired ) {
       if(MySerial.available()) {
         
         if((char)MySerial.read() == '@') {
@@ -105,7 +103,6 @@ void RACom::broadcastPhase() {
 
 void RACom::readPhase() {
     if(MySerial.available()) {
-      Serial.println("QUALCOSA RICEVUTO..");
 
       if((char)MySerial.read() == '@') {
         message = MySerial.readStringUntil('$');
@@ -118,8 +115,7 @@ void RACom::readPhase() {
         }
       }
 
-      //startOperation(RING_ROUND_TRIP_TIMEOUT); // Restart global timeout
-      vTaskSetTimeOutState( &xGlobal_TimeOut );
+      startGlobalTimer();
     }
 
 }
@@ -128,15 +124,13 @@ void RACom::comAlgo() {
   initPhase();
   
   // Global timeout
-  //if(!isOperationTimedOut()) {
-  if( xTaskCheckForTimeOut( &xGlobal_TimeOut, &xGlobal_Wait ) == pdFALSE ) {
+  if(!globalTimer_expired) {
     Serial.println("READY STATE");
     readPhase();
   }
   else {
     broadcastPhase();
-    //startOperation(RING_ROUND_TRIP_TIMEOUT); // Restart global timeout
-    vTaskSetTimeOutState( &xGlobal_TimeOut );
+    startGlobalTimer();
   } 
   
 }
@@ -200,4 +194,42 @@ unsigned long RACom::operationDuration() const {
         elapsed_ticks = (ULONG_MAX - ticksAtStart) + current_ticks;
 
     return elapsed_ticks;
+}
+
+void RACom::setupTimers() {
+  xGlobalTimer = xTimerCreate(
+        "Global_Timer",               /* A text name, purely to help debugging. */
+        ( RING_ROUND_TRIP_TIMEOUT ),  /* The timer period. */
+		    pdFALSE,						          /* This is an auto-reload timer, so xAutoReload is set to pdTRUE. */
+		    ( void * ) 0,				          /* The ID is not used, so can be set to anything. */
+		    globalTimerCallback           /* The callback function that inspects the status of all the other tasks. */
+  );
+
+  xResponseTimer = xTimerCreate(
+        "Response_Timer",             /* A text name, purely to help debugging. */
+        ( RESPONSE_TIMEOUT ),         /* The timer period. */
+		    pdFALSE,						          /* This is an auto-reload timer, so xAutoReload is set to pdTRUE. */
+		    ( void * ) 0,				          /* The ID is not used, so can be set to anything. */
+		    responseTimerCallback         /* The callback function that inspects the status of all the other tasks. */
+  );    
+}
+
+void RACom::startGlobalTimer() {
+  globalTimer_expired = false;
+  xTimerStart( xGlobalTimer, 0 );
+}
+
+void RACom::startResponseTimer() {
+  responseTimer_expired = false;
+  xTimerStart( xResponseTimer, 0 );
+}
+
+static void RACom::globalTimerCallback( TimerHandle_t xTimer )
+{
+	globalTimer_expired = true;
+}
+
+static void RACom::responseTimerCallback( TimerHandle_t xTimer )
+{
+	responseTimer_expired = true;
 }
