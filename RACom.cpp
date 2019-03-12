@@ -1,5 +1,5 @@
-#include "RACom.h"
 // Branch RAComFreeRTOS
+#include "RACom.h"
 SoftwareSerial MySerial (RX, TX);
 
 int initFlag = 0;
