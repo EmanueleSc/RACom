@@ -62,7 +62,7 @@ enum
     TX = 10,
     SET_PIN = 6,
     RING_ROUND_TRIP_TIMEOUT = 30000 / portTICK_PERIOD_MS, // 30 sec for test
-    RESPONSE_TIMEOUT = 500 / portTICK_PERIOD_MS // 500 millisec for test
+    RESPONSE_TIMEOUT = 1000 / portTICK_PERIOD_MS // 500 millisec for test
 };
 
 class RACom {
