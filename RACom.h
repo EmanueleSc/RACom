@@ -6,6 +6,9 @@
 #include <limits.h>
 #include "ArduinoJson.h"
 
+/* Kernel includes. */
+#include "Arduino_FreeRTOS.h"
+
 /**
 *
 Algoritmo pseudocodice:
@@ -56,8 +59,8 @@ enum
     RX = 11,
     TX = 10,
     SET_PIN = 6,
-    RING_ROUND_TRIP_TIMEOUT = 30000, // 30 sec for test
-    RESPONSE_TIMEOUT = 500 // 500 millisec for test
+    RING_ROUND_TRIP_TIMEOUT = 30000 / portTICK_PERIOD_MS, // 30 sec for test
+    RESPONSE_TIMEOUT = 500 / portTICK_PERIOD_MS // 500 millisec for test
 };
 
 class RACom {

@@ -11,6 +11,13 @@ unsigned long cmdTimeout;
 String message = "";
 StaticJsonDocument<200> doc;
 
+/* FreeRtos Staff */
+TickType_t xGlobal_Wait = RING_ROUND_TRIP_TIMEOUT;
+TimeOut_t xGlobal_TimeOut;
+
+TickType_t xResponse_Wait = RESPONSE_TIMEOUT;
+TimeOut_t xResponse_TimeOut;
+
 
 void RACom::init(int id, int number_of_ants) {
     MySerial.begin(BAUND_RATE);
@@ -47,7 +54,8 @@ void RACom::testCom() {
 void RACom::initPhase() {
   if(initFlag == 0) {
     MySerial.flush();
-    startOperation(RING_ROUND_TRIP_TIMEOUT); // for global timeout
+    //startOperation(RING_ROUND_TRIP_TIMEOUT); // for global timeout
+    vTaskSetTimeOutState( &xGlobal_TimeOut );
     initFlag = 1;
   }
 }
@@ -61,11 +69,14 @@ void RACom::broadcastPhase() {
     findMyNext();
     broadcast(MY_ID, currSucc);
 
-    startOperation(RESPONSE_TIMEOUT); // for response timeout
+    //startOperation(RESPONSE_TIMEOUT); // for response timeout
+    vTaskSetTimeOutState( &xResponse_TimeOut );
     message = "";
 
     // iterate until response timeout is not expired
-    while(!isOperationTimedOut()) {
+    //while(!isOperationTimedOut()) {
+    
+    while( xTaskCheckForTimeOut( &xResponse_TimeOut, &xResponse_Wait ) == pdFALSE ) {
       if(MySerial.available()) {
         
         if((char)MySerial.read() == '@') {
@@ -103,7 +114,8 @@ void RACom::readPhase() {
         }
       }
 
-      startOperation(RING_ROUND_TRIP_TIMEOUT); // Restart global timeout
+      //startOperation(RING_ROUND_TRIP_TIMEOUT); // Restart global timeout
+      vTaskSetTimeOutState( &xGlobal_TimeOut );
     }
 
 }
@@ -112,12 +124,14 @@ void RACom::comAlgo() {
   initPhase();
   
   // Global timeout
-  if(!isOperationTimedOut()) { 
+  //if(!isOperationTimedOut()) {
+  if( xTaskCheckForTimeOut( &xGlobal_TimeOut, &xGlobal_Wait ) == pdFALSE ) {
     readPhase();
   }
   else {
     broadcastPhase();
-    startOperation(RING_ROUND_TRIP_TIMEOUT); // Restart global timeout
+    //startOperation(RING_ROUND_TRIP_TIMEOUT); // Restart global timeout
+    vTaskSetTimeOutState( &xGlobal_TimeOut );
   } 
   
 }
