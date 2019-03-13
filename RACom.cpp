@@ -144,17 +144,17 @@ void RACom::findMyNext() {
 }
 
 void RACom::broadcast(int mit, int succ) {
-  /*String json;
-  doc["mit"] = mit;
+  String json = "ZOCCOLA";
+  /*doc["mit"] = mit;
   doc["succ"] = succ;
   serializeJson(doc, json);*/
 
   MySerial.print('@');
-  //MySerial.print(json);
-  //MySerial.print('$');
+  MySerial.print(json);
+  MySerial.print('$');
 
   Serial.print("<--- Message Sent: ");
-  //Serial.println(json);
+  Serial.println(json);
 }
 
 int RACom::getMit(String json) {
