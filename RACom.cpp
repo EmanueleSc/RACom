@@ -194,6 +194,8 @@ unsigned long RACom::operationDuration() const {
 }
 
 void RACom::setupTimers() {
+  Serial.println("Setup timers");
+
   xGlobalTimer = xTimerCreate(
         "Global_Timer",               /* A text name, purely to help debugging. */
         ( RING_ROUND_TRIP_TIMEOUT ),  /* The timer period. */

@@ -74,6 +74,8 @@ public:
     void comAlgo();
 
     void setupTimers();
+    void startGlobalTimer();
+    void startResponseTimer();
 private:
     // methods for comAlgo
     void initPhase();
@@ -90,8 +92,8 @@ private:
     unsigned long operationDuration() const;
 
     //void setupTimers();
-    void startGlobalTimer();
-    void startResponseTimer();
+    //void startGlobalTimer();
+    //void startResponseTimer();
     static void globalTimerCallback(TimerHandle_t xTimer);
     static void responseTimerCallback(TimerHandle_t xTimer);
 };
