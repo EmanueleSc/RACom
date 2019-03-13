@@ -55,14 +55,6 @@ void RACom::testCom() {
   }
 }
 
-void RACom::initPhase() {
-  if(initFlag == 0) {
-    MySerial.flush();
-    startGlobalTimer();
-    initFlag = 1;
-  }
-}
-
 void RACom::broadcastPhase() {
   bool isMyTurn;
   do 
@@ -119,7 +111,11 @@ void RACom::readPhase() {
 }
 
 void RACom::comAlgo() {
-  initPhase();
+  if(initFlag == 0) {
+    MySerial.flush();
+    startGlobalTimer();
+    initFlag = 1;
+  }
   
   // Global timeout
   if(!globalTimer_expired) {
