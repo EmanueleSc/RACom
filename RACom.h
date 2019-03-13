@@ -73,6 +73,7 @@ public:
     void testCom();
     void comAlgo();
 
+    void setupTimers();
 private:
     // methods for comAlgo
     void initPhase();
@@ -88,7 +89,7 @@ private:
     bool isOperationTimedOut() const;
     unsigned long operationDuration() const;
 
-    void setupTimers();
+    //void setupTimers();
     void startGlobalTimer();
     void startResponseTimer();
     static void globalTimerCallback(TimerHandle_t xTimer);

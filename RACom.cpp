@@ -14,8 +14,8 @@ StaticJsonDocument<200> doc;
 /* FreeRtos Staff */
 TimerHandle_t xGlobalTimer;
 TimerHandle_t xResponseTimer;
-bool globalTimer_expired;
-bool responseTimer_expired;
+static bool globalTimer_expired;
+static bool responseTimer_expired;
 
 
 void RACom::init(int id, int number_of_ants) {
@@ -197,7 +197,7 @@ void RACom::setupTimers() {
   xGlobalTimer = xTimerCreate(
         "Global_Timer",               /* A text name, purely to help debugging. */
         ( RING_ROUND_TRIP_TIMEOUT ),  /* The timer period. */
-		    pdFALSE,						          /* This is an auto-reload timer, so xAutoReload is set to pdTRUE. */
+		    pdTRUE,						            /* This is an auto-reload timer, so xAutoReload is set to pdTRUE. */
 		    ( void * ) 0,				          /* The ID is not used, so can be set to anything. */
 		    globalTimerCallback           /* The callback function that inspects the status of all the other tasks. */
   );
@@ -205,7 +205,7 @@ void RACom::setupTimers() {
   xResponseTimer = xTimerCreate(
         "Response_Timer",             /* A text name, purely to help debugging. */
         ( RESPONSE_TIMEOUT ),         /* The timer period. */
-		    pdFALSE,						          /* This is an auto-reload timer, so xAutoReload is set to pdTRUE. */
+		    pdTRUE,						          /* This is an auto-reload timer, so xAutoReload is set to pdTRUE. */
 		    ( void * ) 0,				          /* The ID is not used, so can be set to anything. */
 		    responseTimerCallback         /* The callback function that inspects the status of all the other tasks. */
   );    
