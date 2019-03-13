@@ -11,6 +11,7 @@ static int currSucc;
 //unsigned long cmdTimeout;
 
 static String message = "";
+static char json[250];
 static StaticJsonDocument<200> doc;
 
 /* FreeRtos Staff */
@@ -144,10 +145,9 @@ void RACom::findMyNext() {
 }
 
 void RACom::broadcast(int mit, int succ) {
-  String json = "ZOCCOLA";
-  /*doc["mit"] = mit;
+  doc["mit"] = mit;
   doc["succ"] = succ;
-  serializeJson(doc, json);*/
+  serializeJson(doc, json);
 
   MySerial.print('@');
   MySerial.print(json);
