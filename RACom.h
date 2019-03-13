@@ -83,9 +83,9 @@ private:
     int getMit(String json);
     int getSucc(String json);
 
-    void startOperation(unsigned long timeout);
-    bool isOperationTimedOut() const;
-    unsigned long operationDuration() const;
+    //void startOperation(unsigned long timeout);
+    //bool isOperationTimedOut() const;
+    //unsigned long operationDuration() const;
 
     void setupTimers();
     void startGlobalTimer();

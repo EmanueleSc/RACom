@@ -2,13 +2,15 @@
 #include "RACom.h"
 SoftwareSerial MySerial (RX, TX);
 
-int initFlag = 0;
+static int initFlag = 0;
 int MY_ID;
 int NUM_ANTS; // Number of ants in the antNet
-int currSucc;
-unsigned long ticksAtStart;
-unsigned long cmdTimeout;
-String message = "";
+static int currSucc;
+
+//unsigned long ticksAtStart;
+//unsigned long cmdTimeout;
+
+static String message = "";
 StaticJsonDocument<200> doc;
 
 /* FreeRtos Staff */
@@ -167,17 +169,17 @@ int RACom::getSucc(String json) {
   return succ;
 }
 
-void RACom::startOperation(unsigned long timeout) {
+/*void RACom::startOperation(unsigned long timeout) {
     ticksAtStart = millis();
     cmdTimeout = timeout;
-}
+}*/
 
-bool RACom::isOperationTimedOut() const {
+/*bool RACom::isOperationTimedOut() const {
     return operationDuration() >= cmdTimeout;
-}
+}*/
 
 
-unsigned long RACom::operationDuration() const {
+/*unsigned long RACom::operationDuration() const {
     unsigned long current_ticks = millis();
     unsigned long elapsed_ticks;
     
@@ -187,7 +189,7 @@ unsigned long RACom::operationDuration() const {
         elapsed_ticks = (ULONG_MAX - ticksAtStart) + current_ticks;
 
     return elapsed_ticks;
-}
+}*/
 
 void RACom::setupTimers() {
   Serial.println("Setup timers");
