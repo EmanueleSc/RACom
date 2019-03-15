@@ -161,7 +161,7 @@ void RACom::broadcast() {
   MySerial.print(',');
   MySerial.print("\"succ\":");
   MySerial.print(currSucc);
-  MySerial.print('}')
+  MySerial.print('}');
   MySerial.print('$');
 
   Serial.print("<--- Message Sent ");
