@@ -154,7 +154,9 @@ void RACom::broadcast() {
   /*doc["mit"] = MY_ID;
   doc["succ"] = currSucc;
   serializeJson(doc, msg);*/
-  char* msg = "{\"mit\":MY_ID,\"succ\":currSucc}";
+  //char* msg = "{\"mit\":MY_ID,\"succ\":currSucc}";
+  char* msg = '{"mit":'+MY_ID+','+'"succ":'+currSucc+'}';
+
 
   MySerial.print('@');
   MySerial.print(msg);
