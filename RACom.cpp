@@ -159,12 +159,32 @@ void RACom::broadcast() {
   Serial.println(currSucc);
 }
 
-int RACom::getMit() {  
-  return _buffer[0] - '0';
+int RACom::getMit() {
+  int i = 0;
+  char * pch = strtok(_buffer, "#");
+
+  while (pch != NULL)
+  {
+    if(i == 0) break;
+    pch = strtok (NULL, "#");
+    i++;
+  }  
+  
+  return pch - '0';
 }
 
 int RACom::getSucc() {
-  return _buffer[2] - '0';
+  int i = 0;
+  char * pch = strtok(_buffer, "#");
+
+  while (pch != NULL)
+  {
+    if(i == 1) break;
+    pch = strtok (NULL, "#");
+    i++;
+  }  
+  
+  return pch - '0';
 }
 
 /*void RACom::startOperation(unsigned long timeout) {
