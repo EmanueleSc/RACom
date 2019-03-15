@@ -10,9 +10,10 @@ static int currSucc;
 //unsigned long ticksAtStart;
 //unsigned long cmdTimeout;
 
-static String message = "";
-static char json[250];
 static StaticJsonDocument<200> doc;
+
+int _bufsize;
+static char _buffer[100];
 
 /* FreeRtos Staff */
 TimerHandle_t xGlobalTimer;
@@ -34,6 +35,10 @@ void RACom::init(int id, int number_of_ants) {
     MY_ID = id;
     NUM_ANTS = number_of_ants;
     currSucc = MY_ID;
+    
+    _bufsize = sizeof(_buffer)/sizeof(char);
+    // flush the buffer
+    memset(_buffer, 0, _bufsize);
 
     // Start softweare timers
     globalTimer_expired = false;
@@ -64,17 +69,16 @@ void RACom::broadcastPhase() {
   {
     isMyTurn = false;
     findMyNext();
-    broadcast(MY_ID, currSucc);
-
+    broadcast();
     startResponseTimer();
-    message = "";
+    memset(_buffer, 0, _bufsize);
 
     // iterate until response timeout is not expired
     while( !responseTimer_expired ) {
       if(MySerial.available()) {
         
         if((char)MySerial.read() == '@') {
-          message = MySerial.readStringUntil('$');
+          MySerial.readBytesUntil('$', _buffer, _bufsize);
           MySerial.flush();
           break;
         }
@@ -82,27 +86,29 @@ void RACom::broadcastPhase() {
       }
     }
 
-    if(message != "" && getSucc(message) == MY_ID) {
+    if(strlen(_buffer) != 0 && getSucc() == MY_ID) {
       currSucc = MY_ID;
       isMyTurn = true;
     } 
 
     Serial.print("<--- Message received after broadcast: ");
-    Serial.println(message);
+    Serial.println(_buffer);
 
   } 
-  while(message == "" || isMyTurn == true);
+  while(strlen(_buffer) == 0 || isMyTurn == true);
 }
 
 void RACom::readPhase() {
     if(MySerial.available()) {
 
       if((char)MySerial.read() == '@') {
-        message = MySerial.readStringUntil('$');
+        MySerial.readBytesUntil('$', _buffer, _bufsize);
         MySerial.flush();
+        
         Serial.print("<--- Message received: ");
-        Serial.println(message);
-        if(getSucc(message) == MY_ID) {
+        Serial.println(_buffer);
+        
+        if(getSucc() == MY_ID) {
           currSucc = MY_ID;
           broadcastPhase();
         }
@@ -144,27 +150,27 @@ void RACom::findMyNext() {
   if(currSucc == MY_ID) currSucc++;
 }
 
-void RACom::broadcast(int mit, int succ) {
-  doc["mit"] = mit;
-  doc["succ"] = succ;
-  serializeJson(doc, json);
+void RACom::broadcast() {
+  doc["mit"] = MY_ID;
+  doc["succ"] = currSucc;
+  serializeJson(doc, _buffer);
 
   MySerial.print('@');
-  MySerial.print(json);
+  MySerial.print(_buffer);
   MySerial.print('$');
 
   Serial.print("<--- Message Sent: ");
-  Serial.println(json);
+  Serial.println(_buffer);
 }
 
-int RACom::getMit(String json) {
-  deserializeJson(doc, json);
+int RACom::getMit() {
+  deserializeJson(doc, _buffer);
   int mit = doc["mit"];
   return mit;
 }
 
-int RACom::getSucc(String json) {
-  deserializeJson(doc, json);
+int RACom::getSucc() {
+  deserializeJson(doc, _buffer);
   int succ = doc["succ"];
   return succ;
 }

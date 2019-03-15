@@ -79,9 +79,9 @@ private:
     void readPhase();
 
     void findMyNext();
-    void broadcast(int mit, int succ);
-    int getMit(String json);
-    int getSucc(String json);
+    void broadcast();
+    int getMit();
+    int getSucc();
 
     //void startOperation(unsigned long timeout);
     //bool isOperationTimedOut() const;
