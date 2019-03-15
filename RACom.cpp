@@ -84,10 +84,16 @@ void RACom::broadcastPhase() {
 
       }
     }
+    
+    Serial.print("BUFFER:");
+    Serial.println(_buffer);
+    Serial.print("getSucc(): ");
+    Serial.println(getSucc());
+    Serial.print("MY_ID: ");
+    Serial.println(MY_ID);
 
     if(strlen(_buffer) != 0 && getSucc() == MY_ID) {
-      Serial.print("IT'S MEEEEEEEEEEEE: ");
-      Serial.println(getSucc());
+      Serial.print("IT'S MEEEEEEEEEEEE");
       currSucc = MY_ID;
       isMyTurn = true;
     } 
