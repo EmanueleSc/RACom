@@ -151,6 +151,7 @@ void RACom::findMyNext() {
 }
 
 void RACom::broadcast() {
+  memset(_buffer, 0, _bufsize);
   doc["mit"] = MY_ID;
   doc["succ"] = currSucc;
   serializeJson(doc, _buffer);
