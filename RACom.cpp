@@ -165,8 +165,14 @@ void RACom::broadcast() {
   MySerial.print('}');
   MySerial.print('$');
 
-  Serial.println("<--- Message Sent ");
-  //Serial.println(msg);
+  Serial.print("<--- Message Sent: ");
+  Serial.print("{\"mit\":");
+  Serial.print(MY_ID);
+  Serial.print(',');
+  Serial.print("\"succ\":");
+  Serial.print(currSucc);
+  Serial.print('}');
+  Serial.println();
 }
 
 int RACom::getMit() {
