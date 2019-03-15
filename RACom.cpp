@@ -151,18 +151,19 @@ void RACom::findMyNext() {
 }
 
 void RACom::broadcast() {
-  memset(_buffer, 0, _bufsize);
-  
+  char msg[100];
+  memset(msg, 0, _bufsize);
+
   doc["mit"] = MY_ID;
   doc["succ"] = currSucc;
-  serializeJson(doc, _buffer);
+  serializeJson(doc, msg);
 
   MySerial.print('@');
-  MySerial.print(_buffer);
+  MySerial.print(msg);
   MySerial.print('$');
 
   Serial.print("<--- Message Sent: ");
-  Serial.println(_buffer);
+  Serial.println(msg);
 }
 
 int RACom::getMit() {
