@@ -10,7 +10,7 @@ static int currSucc;
 //unsigned long ticksAtStart;
 //unsigned long cmdTimeout;
 
-static StaticJsonDocument<100> doc;
+static StaticJsonDocument<200> doc;
 
 int _bufsize;
 static char _buffer[100];
