@@ -160,9 +160,13 @@ void RACom::broadcast() {
 }
 
 int RACom::getMit() {
-  int i = 0;
-  char * pch = strtok(_buffer, "#");
+  char copy[100];
+  int len = strlen(_buffer);
+  strncpy(copy, _buffer, len);
+  
+  char * pch = strtok(copy, "#");
 
+  int i = 0;
   while (pch != NULL)
   {
     if(i == 0) break;
@@ -174,18 +178,22 @@ int RACom::getMit() {
 }
 
 int RACom::getSucc() {
-  int i = 0;
-  char * pch = strtok(_buffer, "#");
+  char copy[100];
+  int len = strlen(_buffer);
+  strncpy(copy, _buffer, len);
+  
+  char * pch = strtok(copy, "#");
 
+  int i = 0;
   while (pch != NULL)
   {
     if(i == 1) break;
     pch = strtok (NULL, "#");
     i++;
-    Serial.print("PARSE STO CAZZO: ");
-    Serial.println(pch);
   }
 
+  Serial.print("PARSE STO CAZZO: ");
+  Serial.println(pch);
   Serial.println(_buffer);  
   
   return atoi(pch);
