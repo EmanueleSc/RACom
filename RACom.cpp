@@ -170,7 +170,7 @@ int RACom::getMit() {
     i++;
   }  
   
-  return pch - '0';
+  return atoi(pch);
 }
 
 int RACom::getSucc() {
@@ -184,7 +184,7 @@ int RACom::getSucc() {
     i++;
   }  
   
-  return pch - '0';
+  return atoi(pch);
 }
 
 /*void RACom::startOperation(unsigned long timeout) {
