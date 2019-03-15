@@ -79,7 +79,6 @@ void RACom::broadcastPhase() {
         
         if((char)MySerial.read() == '@') {
           MySerial.readBytesUntil('$', _buffer, _bufsize);
-          MySerial.flush();
           break;
         }
 
@@ -104,7 +103,6 @@ void RACom::readPhase() {
       if((char)MySerial.read() == '@') {
         memset(_buffer, 0, _bufsize);
         MySerial.readBytesUntil('$', _buffer, _bufsize);
-        MySerial.flush();
         
         Serial.print("<--- Message received: ");
         Serial.println(_buffer);
