@@ -183,7 +183,7 @@ int RACom::getSucc() {
     pch = strtok (NULL, "#");
     i++;
     Serial.print("PARSE STO CAZZO: ");
-    Serial.prinln(pch);
+    Serial.println(pch);
   }  
   
   return atoi(pch);
