@@ -160,9 +160,10 @@ void RACom::broadcast() {
 }
 
 int RACom::getMit() {
-  char copy[100];
-  int len = strlen(_buffer);
+  char copy[50];
+  size_t len = sizeof(copy);
   strncpy(copy, _buffer, len);
+  copy[len-1] = '\0';
   
   char * pch = strtok(copy, "#");
 
@@ -178,9 +179,10 @@ int RACom::getMit() {
 }
 
 int RACom::getSucc() {
-  char copy[100];
-  int len = strlen(_buffer);
+  char copy[50];
+  size_t len = sizeof(copy);
   strncpy(copy, _buffer, len);
+  copy[len-1] = '\0';
   
   char * pch = strtok(copy, "#");
 
