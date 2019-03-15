@@ -10,10 +10,10 @@ static int currSucc;
 //unsigned long ticksAtStart;
 //unsigned long cmdTimeout;
 
-static StaticJsonDocument<120> doc;
+static StaticJsonDocument<100> doc;
 
 int _bufsize;
-static char _buffer[120];
+static char _buffer[100];
 
 /* FreeRtos Staff */
 TimerHandle_t xGlobalTimer;
@@ -151,18 +151,18 @@ void RACom::findMyNext() {
 }
 
 void RACom::broadcast() {
-  //memset(_buffer, 0, _bufsize);
+  memset(_buffer, 0, _bufsize);
+  
   doc["mit"] = MY_ID;
   doc["succ"] = currSucc;
-  //serializeJson(doc, _buffer);
+  serializeJson(doc, _buffer);
 
   MySerial.print('@');
-  //MySerial.print(_buffer);
-  serializeJson(doc, MySerial);
+  MySerial.print(_buffer);
   MySerial.print('$');
 
-  /*Serial.print("<--- Message Sent: ");
-  Serial.println(_buffer);*/
+  Serial.print("<--- Message Sent: ");
+  Serial.println(_buffer);
 }
 
 int RACom::getMit() {
