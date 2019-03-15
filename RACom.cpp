@@ -154,14 +154,14 @@ void RACom::broadcast() {
   /*doc["mit"] = MY_ID;
   doc["succ"] = currSucc;
   serializeJson(doc, msg);*/
+  char* msg = "{\"mit\":MY_ID,\"succ\":currSucc}";
 
   MySerial.print('@');
-  MySerial.print('{"mit":' + MY_ID + ',' + '"succ":' + currSucc + '}');
-  
+  MySerial.print(msg);
   MySerial.print('$');
 
   Serial.print("<--- Message Sent: ");
-  Serial.println('{"mit":' + MY_ID + ',' + '"succ":' + currSucc + '}');
+  Serial.println(msg);
 }
 
 int RACom::getMit() {
