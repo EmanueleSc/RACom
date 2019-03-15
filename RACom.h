@@ -5,7 +5,6 @@
 #include "Arduino.h"
 #include "SoftwareSerial.h"
 #include <limits.h>
-#include "ArduinoJson.h"
 
 /* Kernel includes. */
 #include "Arduino_FreeRTOS.h"

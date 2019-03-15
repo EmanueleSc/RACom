@@ -10,10 +10,8 @@ static int currSucc;
 //unsigned long ticksAtStart;
 //unsigned long cmdTimeout;
 
-static StaticJsonDocument<200> doc;
-
 int _bufsize;
-static char _buffer[100];
+static char _buffer[50];
 
 /* FreeRtos Staff */
 TimerHandle_t xGlobalTimer;
@@ -84,16 +82,8 @@ void RACom::broadcastPhase() {
 
       }
     }
-    
-    Serial.print("BUFFER:");
-    Serial.println(_buffer);
-    Serial.print("getSucc(): ");
-    Serial.println(getSucc());
-    Serial.print("MY_ID: ");
-    Serial.println(MY_ID);
 
     if(strlen(_buffer) != 0 && getSucc() == MY_ID) {
-      Serial.print("IT'S MEEEEEEEEEEEE");
       currSucc = MY_ID;
       isMyTurn = true;
     } 
@@ -109,7 +99,6 @@ void RACom::readPhase() {
     if(MySerial.available()) {
 
       if((char)MySerial.read() == '@') {
-        memset(_buffer, 0, _bufsize);
         MySerial.readBytesUntil('$', _buffer, _bufsize);
         
         Serial.print("<--- Message received: ");
@@ -158,39 +147,24 @@ void RACom::findMyNext() {
 }
 
 void RACom::broadcast() {
-  /*doc["mit"] = MY_ID;
-  doc["succ"] = currSucc;
-  serializeJson(doc, msg);*/
-
   MySerial.print('@');
-  MySerial.print("{\"mit\":");
   MySerial.print(MY_ID);
-  MySerial.print(',');
-  MySerial.print("\"succ\":");
+  MySerial.print('#');
   MySerial.print(currSucc);
-  MySerial.print('}');
   MySerial.print('$');
 
   Serial.print("<--- Message Sent: ");
-  Serial.print("{\"mit\":");
   Serial.print(MY_ID);
-  Serial.print(',');
-  Serial.print("\"succ\":");
-  Serial.print(currSucc);
-  Serial.print('}');
-  Serial.println();
+  Serial.print('#');
+  Serial.println(currSucc);
 }
 
-int RACom::getMit() {
-  deserializeJson(doc, _buffer);
-  int mit = doc["mit"];
-  return mit;
+int RACom::getMit() {  
+  return _buffer[0] - '0';
 }
 
 int RACom::getSucc() {
-  deserializeJson(doc, _buffer);
-  int succ = doc["succ"];
-  return succ;
+  return _buffer[2] - '0';
 }
 
 /*void RACom::startOperation(unsigned long timeout) {
