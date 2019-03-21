@@ -136,11 +136,11 @@ void RACom::comAlgo() {
 void RACom::findMyNext() {
   currSucc++;
 
-  if(NUM_ANTS > 2) {
-    if(currSucc > NUM_ANTS) currSucc = 1; 
+  if(NUM_ANTS == 2 || MY_ID == NUM_ANTS) {
+    if(currSucc >= NUM_ANTS) currSucc = 1; 
   }
   else {
-    if(currSucc >= NUM_ANTS) currSucc = 1; 
+    if(currSucc > NUM_ANTS) currSucc = 1; 
   }
   
   if(currSucc == MY_ID) currSucc++;
