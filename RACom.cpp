@@ -251,12 +251,12 @@ void RACom::startResponseTimer() {
 
 static void RACom::globalTimerCallback( TimerHandle_t xTimer )
 {
-  Serial.println("Global Timer Expired");
+  //Serial.println("Global Timer Expired");
 	globalTimer_expired = true;
 }
 
 static void RACom::responseTimerCallback( TimerHandle_t xTimer )
 {
-  Serial.println("Response Timer Expired");
+  //Serial.println("Response Timer Expired");
 	responseTimer_expired = true;
 }
