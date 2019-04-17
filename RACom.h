@@ -61,16 +61,18 @@ enum
     TX = 10,
     SET_PIN = 6,
     RING_ROUND_TRIP_TIMEOUT = 30000 / portTICK_PERIOD_MS, // 30 sec for test
-    RESPONSE_TIMEOUT = 500 / portTICK_PERIOD_MS // 500 millisec for test
+    RESPONSE_TIMEOUT = 500 / portTICK_PERIOD_MS, // 500 millisec for test
+    NUM_NEXT_POS = 8
 };
 
 class RACom {
 public:
-    void init(int id, int number_of_ants);
+    void init(byte id, byte number_of_ants);
     void comunicationMode();
     void commandMode();
     void testCom();
     void comAlgo();
+    void setNextPosArray(byte replace[]);
 
 private:
     // methods for comAlgo

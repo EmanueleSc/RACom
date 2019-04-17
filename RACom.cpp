@@ -2,15 +2,15 @@
 #include "RACom.h"
 SoftwareSerial MySerial (RX, TX);
 
-static int initFlag = 0;
-int MY_ID;
-int NUM_ANTS; // Number of ants in the antNet
-static int currSucc;
+static byte initFlag = 0;
+byte MY_ID;
+byte NUM_ANTS; // Number of ants in the antNet
+static byte currSucc;
 
 //unsigned long ticksAtStart;
 //unsigned long cmdTimeout;
 
-int _bufsize;
+byte _bufsize;
 static char _buffer[50];
 
 /* FreeRtos Staff */
@@ -19,8 +19,11 @@ TimerHandle_t xResponseTimer;
 static bool globalTimer_expired;
 static bool responseTimer_expired;
 
+// Array of next positions
+static byte nextPositions[NUM_NEXT_POS] = { 225, 225, 225, 225, 225, 225, 225, 225  };
 
-void RACom::init(int id, int number_of_ants) {
+
+void RACom::init(byte id, byte number_of_ants) {
     MySerial.begin(BAUND_RATE);
     while(!MySerial) {
       ;
@@ -133,6 +136,12 @@ void RACom::comAlgo() {
   
 }
 
+void RACom::setNextPosArray(byte replace[]) {
+  for(int i = 0; i < NUM_NEXT_POS; i++) {
+    nextPositions[i] = replace[i];
+  }
+}
+
 void RACom::findMyNext() {
   currSucc++;
 
@@ -147,16 +156,32 @@ void RACom::findMyNext() {
 }
 
 void RACom::broadcast() {
-  MySerial.print('@');
-  MySerial.print(MY_ID);
-  MySerial.print('#');
-  MySerial.print(currSucc);
-  MySerial.print('$');
-
   Serial.print("<--- Message Sent: ");
   Serial.print(MY_ID);
   Serial.print('#');
   Serial.println(currSucc);
+  Serial.print('#');
+
+  // Wireless send
+  MySerial.print('@'); // start
+  MySerial.print(MY_ID); // mit
+  MySerial.print('#');
+  MySerial.print(currSucc); // succ
+  MySerial.print('#');
+  
+
+  for(int i = 0; i < NUM_NEXT_POS; i++) {
+    MySerial.print(nextPositions[i]); // next pos
+    Serial.print(nextPositions[i]);
+  
+    if(i != NUM_NEXT_POS - 1) {
+      MySerial.print('#');
+      Serial.print('#');
+    }
+  }
+
+  MySerial.print('$'); // stop
+
 }
 
 int RACom::getMit() {
