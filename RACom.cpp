@@ -48,11 +48,13 @@ void RACom::init(byte id, byte number_of_ants) {
 }
 
 void RACom::comunicationMode() {
-  digitalWrite(SET_PIN, HIGH);
+  //digitalWrite(SET_PIN, HIGH);
+  analogWrite(SET_PIN, 255);
 }
 
 void RACom::commandMode() {
-  digitalWrite(SET_PIN, LOW);
+  //digitalWrite(SET_PIN, LOW);
+  analogWrite(SET_PIN, 0);
 }
 
 void RACom::testCom() {
