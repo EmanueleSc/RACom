@@ -14,13 +14,13 @@ static byte _bufsize;
 static char _buffer[50];
 
 /* FreeRtos Staff */
-static TimerHandle_t xGlobalTimer;
-static TimerHandle_t xResponseTimer;
+TimerHandle_t xGlobalTimer;
+TimerHandle_t xResponseTimer;
 static bool globalTimer_expired;
 static bool responseTimer_expired;
 
 // Array of next positions
-static byte nextPositions[NUM_NEXT_POS] = { 225, 225, 225, 225, 225, 225, 225, 225  };
+//static byte nextPositions[NUM_NEXT_POS] = { 225, 225, 225, 225, 225, 225, 225, 225  };
 
 
 void RACom::init(byte id, byte number_of_ants) {
@@ -44,7 +44,7 @@ void RACom::init(byte id, byte number_of_ants) {
     // Start softweare timers
     globalTimer_expired = false;
     responseTimer_expired = false;
-    //setupTimers();
+    setupTimers();
 }
 
 void RACom::comunicationMode() {
