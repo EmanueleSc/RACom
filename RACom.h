@@ -4,7 +4,7 @@
 
 #include "Arduino.h"
 #include "SoftwareSerial.h"
-#include <limits.h>
+//#include <limits.h>
 
 /* Kernel includes. */
 #include "Arduino_FreeRTOS.h"
