@@ -57,10 +57,9 @@ STEP1:                  succ <- findMyNext
 enum
 {
     BAUND_RATE = 9600,
-    RX = 11,
-    TX = 10,
-    SET_PIN = A4,
-    //SET_PIN = 13,
+    RX = 6,
+    TX = 8,
+    SET_PIN = A3, // 13
     RING_ROUND_TRIP_TIMEOUT = 30000 / portTICK_PERIOD_MS, // 30 sec for test
     RESPONSE_TIMEOUT = 500 / portTICK_PERIOD_MS, // 500 millisec for test
     NUM_NEXT_POS = 8
