@@ -44,7 +44,7 @@ void RACom::init(byte id, byte number_of_ants) {
     // Start softweare timers
     globalTimer_expired = false;
     responseTimer_expired = false;
-    setupTimers();
+    //setupTimers();
 }
 
 void RACom::comunicationMode() {
