@@ -252,7 +252,7 @@ void RACom::setupTimers() {
   xGlobalTimer = xTimerCreate(
         "Global_Timer",               /* A text name, purely to help debugging. */
         ( RING_ROUND_TRIP_TIMEOUT ),  /* The timer period. */
-		    pdFALSE,						            /* This is an auto-reload timer, so xAutoReload is set to pdTRUE. */
+		    pdFALSE,						          /* This is an auto-reload timer, so xAutoReload is set to pdTRUE. */
 		    ( void * ) 0,				          /* The ID is not used, so can be set to anything. */
 		    globalTimerCallback           /* The callback function that inspects the status of all the other tasks. */
   );
