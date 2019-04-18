@@ -138,11 +138,11 @@ void RACom::comAlgo() {
   
 }
 
-void RACom::setNextPosArray(byte replace[]) {
+/* void RACom::setNextPosArray(byte replace[]) {
   for(int i = 0; i < NUM_NEXT_POS; i++) {
     nextPositions[i] = replace[i];
   }
-}
+} */
 
 void RACom::findMyNext() {
   currSucc++;
@@ -172,7 +172,7 @@ void RACom::broadcast() {
   MySerial.print('#');
   
 
-  for(int i = 0; i < NUM_NEXT_POS; i++) {
+  /* for(int i = 0; i < NUM_NEXT_POS; i++) {
     MySerial.print(nextPositions[i]); // next pos
     Serial.print(nextPositions[i]);
   
@@ -180,7 +180,7 @@ void RACom::broadcast() {
       MySerial.print('#');
       Serial.print('#');
     }
-  }
+  } */
 
   MySerial.print('$'); // stop
 
