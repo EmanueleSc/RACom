@@ -59,7 +59,7 @@ enum
     BAUND_RATE = 9600,
     RX = 8,
     TX = 6,
-    SET_PIN = 13
+    SET_PIN = 13,
     RING_ROUND_TRIP_TIMEOUT = 10000 / portTICK_PERIOD_MS, // 30 sec for test
     RESPONSE_TIMEOUT = 500 / portTICK_PERIOD_MS, // 500 millisec for test
     NUM_NEXT_POS = 8
