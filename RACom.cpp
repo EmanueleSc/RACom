@@ -1,21 +1,21 @@
 // Branch RAComFreeRTOS
 #include "RACom.h"
-SoftwareSerial MySerial (RX, TX);
+static SoftwareSerial MySerial (RX, TX);
 
 static byte initFlag = 0;
-byte MY_ID;
-byte NUM_ANTS; // Number of ants in the antNet
+static byte MY_ID;
+static byte NUM_ANTS; // Number of ants in the antNet
 static byte currSucc;
 
 //unsigned long ticksAtStart;
 //unsigned long cmdTimeout;
 
-byte _bufsize;
+static byte _bufsize;
 static char _buffer[50];
 
 /* FreeRtos Staff */
-TimerHandle_t xGlobalTimer;
-TimerHandle_t xResponseTimer;
+static TimerHandle_t xGlobalTimer;
+static TimerHandle_t xResponseTimer;
 static bool globalTimer_expired;
 static bool responseTimer_expired;
 
