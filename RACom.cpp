@@ -161,7 +161,7 @@ void RACom::broadcast() {
   Serial.print("<--- Message Sent: ");
   Serial.print(MY_ID);
   Serial.print('#');
-  Serial.println(currSucc);
+  Serial.print(currSucc);
   Serial.print('#');
 
   // Wireless send
@@ -278,12 +278,14 @@ void RACom::startResponseTimer() {
 
 static void RACom::globalTimerCallback( TimerHandle_t xTimer )
 {
+  Serial.print('\n');
   Serial.println("Global Timer Expired");
 	globalTimer_expired = true;
 }
 
 static void RACom::responseTimerCallback( TimerHandle_t xTimer )
 {
+  Serial.print('\n');
   Serial.println("Response Timer Expired");
 	responseTimer_expired = true;
 }
