@@ -42,8 +42,8 @@ void RACom::init(byte id, byte number_of_ants) {
     memset(_buffer, 0, _bufsize);
 
     // Start softweare timers
-    globalTimer_expired = false;
-    responseTimer_expired = false;
+    globalTimer_expired = true;
+    responseTimer_expired = true;
     setupTimers();
 }
 
@@ -98,6 +98,9 @@ void RACom::broadcastPhase() {
 
   } 
   while(strlen(_buffer) == 0 || isMyTurn == true);
+
+  // At the end of brodcast phase, restart the global timer
+  startGlobalTimer();
 }
 
 void RACom::readPhase() {
@@ -115,7 +118,6 @@ void RACom::readPhase() {
         }
       }
 
-      startGlobalTimer();
     }
 
 }
@@ -132,8 +134,8 @@ void RACom::comAlgo() {
     readPhase();
   }
   else {
+    // I'm the only one in the network
     broadcastPhase();
-    startGlobalTimer();
   } 
   
 }
@@ -162,14 +164,14 @@ void RACom::broadcast() {
   Serial.print(MY_ID);
   Serial.print('#');
   Serial.print(currSucc);
-  Serial.print('#');
+  //Serial.print('#');
 
   // Wireless send
   MySerial.print('@'); // start
   MySerial.print(MY_ID); // mit
   MySerial.print('#');
   MySerial.print(currSucc); // succ
-  MySerial.print('#');
+  //MySerial.print('#');
   
 
   /* for(int i = 0; i < NUM_NEXT_POS; i++) {
@@ -267,11 +269,15 @@ void RACom::setupTimers() {
 }
 
 void RACom::startGlobalTimer() {
+  Serial.print('\n');
+  Serial.println("G. started");
   globalTimer_expired = false;
   xTimerStart( xGlobalTimer, 0 );
 }
 
 void RACom::startResponseTimer() {
+  Serial.print('\n');
+  Serial.println("R. started");
   responseTimer_expired = false;
   xTimerStart( xResponseTimer, 0 );
 }
