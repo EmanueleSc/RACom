@@ -42,8 +42,8 @@ void RACom::init(byte id, byte number_of_ants) {
     memset(_buffer, 0, _bufsize);
 
     // Start softweare timers
-    globalTimer_expired = true;
-    responseTimer_expired = true;
+    globalTimer_expired = false;
+    responseTimer_expired = false;
     setupTimers();
 }
 
