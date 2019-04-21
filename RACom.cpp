@@ -1,6 +1,7 @@
 // Branch RAComFreeRTOS
 #include "RACom.h"
 static SoftwareSerial MySerial (RX, TX);
+//static NeoSWSerial MySerial (RX, TX);
 
 static byte initFlag = 0;
 static byte MY_ID;
@@ -16,8 +17,8 @@ static char _buffer[50];
 /* FreeRtos Staff */
 TimerHandle_t xGlobalTimer;
 TimerHandle_t xResponseTimer;
-static bool globalTimer_expired;
-static bool responseTimer_expired;
+static bool globalTimer_expired = false;
+static bool responseTimer_expired = false;
 
 // Array of next positions
 //static byte nextPositions[NUM_NEXT_POS] = { 225, 225, 225, 225, 225, 225, 225, 225  };
@@ -25,11 +26,10 @@ static bool responseTimer_expired;
 
 void RACom::init(byte id, byte number_of_ants) {
     MySerial.begin(BAUND_RATE);
-    while(!MySerial) {
-      ;
-    }
-    Serial.print("Wireless module serial started at ");
-    Serial.println(BAUND_RATE);
+    while(!MySerial);
+    
+    Serial.println(F("Wireless module serial started"));
+    //Serial.println(BAUND_RATE);
 
     pinMode(SET_PIN, OUTPUT); // Connected to set input
 
@@ -39,12 +39,12 @@ void RACom::init(byte id, byte number_of_ants) {
     
     _bufsize = sizeof(_buffer)/sizeof(char);
     // flush the buffer
-    memset(_buffer, 0, _bufsize);
+    //memset(_buffer, 0, _bufsize);
+    _buffer[0] = '\0';
 
     // Start softweare timers
-    globalTimer_expired = false;
-    responseTimer_expired = false;
-    setupTimers();
+    /* globalTimer_expired = false;
+    responseTimer_expired = false; */
 }
 
 void RACom::comunicationMode() {
@@ -74,7 +74,8 @@ void RACom::broadcastPhase() {
     findMyNext();
     broadcast();
     startResponseTimer();
-    memset(_buffer, 0, _bufsize);
+    //memset(_buffer, 0, _bufsize);
+    _buffer[0] = '\0';
 
     // iterate until response timeout is not expired
     while( !responseTimer_expired ) {
@@ -93,7 +94,7 @@ void RACom::broadcastPhase() {
       isMyTurn = true;
     } 
 
-    Serial.print("<--- Message received after broadcast: ");
+    Serial.print(F("<--- Message received after broadcast: "));
     Serial.println(_buffer);
 
   } 
@@ -109,7 +110,7 @@ void RACom::readPhase() {
       if((char)MySerial.read() == '@') {
         MySerial.readBytesUntil('$', _buffer, _bufsize);
         
-        Serial.print("<--- Message received: ");
+        Serial.print(F("<--- Message received: "));
         Serial.println(_buffer);
         
         if(getSucc() == MY_ID) {
@@ -160,7 +161,7 @@ void RACom::findMyNext() {
 }
 
 void RACom::broadcast() {
-  Serial.print("<--- Message Sent: ");
+  Serial.print(F("<--- Message Sent: "));
   Serial.print(MY_ID);
   Serial.print('#');
   Serial.print(currSucc);
@@ -188,7 +189,7 @@ void RACom::broadcast() {
 
 }
 
-int RACom::getMit() {
+/* int RACom::getMit() {
   char copy[50];
   size_t len = sizeof(copy);
   strncpy(copy, _buffer, len);
@@ -205,51 +206,32 @@ int RACom::getMit() {
   }  
   
   return atoi(pch);
-}
+} */
 
 int RACom::getSucc() {
-  char copy[50];
-  size_t len = sizeof(copy);
-  strncpy(copy, _buffer, len);
-  copy[len-1] = '\0';
-  
-  char * pch = strtok(copy, "#");
+  if( strlen(_buffer) != 0 ) {
+    char copy[50];
+    size_t len = sizeof(copy);
+    strncpy(copy, _buffer, len);
+    copy[len-1] = '\0';
 
-  int i = 0;
-  while (pch != NULL)
-  {
-    if(i == 1) break;
-    pch = strtok (NULL, "#");
-    i++;
+    char * pch = strtok(copy, "#");
+    int i = 0;
+    while (pch != NULL)
+    {
+      if(i == 1) break;
+      pch = strtok (NULL, "#");
+      i++;
+    }
+
+    return atoi(pch);
   }
-  
-  return atoi(pch);
+
+  return NUM_ANTS + 1; // not existing ANT
 }
 
-/*void RACom::startOperation(unsigned long timeout) {
-    ticksAtStart = millis();
-    cmdTimeout = timeout;
-}*/
-
-/*bool RACom::isOperationTimedOut() const {
-    return operationDuration() >= cmdTimeout;
-}*/
-
-
-/*unsigned long RACom::operationDuration() const {
-    unsigned long current_ticks = millis();
-    unsigned long elapsed_ticks;
-    
-    if (current_ticks >= ticksAtStart)
-        elapsed_ticks = current_ticks - ticksAtStart;
-    else
-        elapsed_ticks = (ULONG_MAX - ticksAtStart) + current_ticks;
-
-    return elapsed_ticks;
-}*/
-
 void RACom::setupTimers() {
-  Serial.println("Setup timers");
+  //Serial.println("Setup timers");
 
   xGlobalTimer = xTimerCreate(
         "Global_Timer",               /* A text name, purely to help debugging. */
@@ -265,33 +247,38 @@ void RACom::setupTimers() {
 		    pdFALSE,						          /* This is an auto-reload timer, so xAutoReload is set to pdTRUE. */
 		    ( void * ) 0,				          /* The ID is not used, so can be set to anything. */
 		    responseTimerCallback         /* The callback function that inspects the status of all the other tasks. */
-  );    
+  );
+
+  if(xGlobalTimer == NULL || xResponseTimer == NULL) {
+    Serial.println(F("failure creating Timers"));
+    for(;;);
+  }
 }
 
 void RACom::startGlobalTimer() {
   Serial.print('\n');
-  Serial.println("G. started");
+  Serial.println(F("G. timer started"));
   globalTimer_expired = false;
   xTimerStart( xGlobalTimer, 0 );
 }
 
 void RACom::startResponseTimer() {
   Serial.print('\n');
-  Serial.println("R. started");
+  Serial.println(F("R. timer started"));
   responseTimer_expired = false;
   xTimerStart( xResponseTimer, 0 );
 }
 
-static void RACom::globalTimerCallback( TimerHandle_t xTimer )
+/* static */ void RACom::globalTimerCallback( TimerHandle_t xTimer )
 {
   Serial.print('\n');
-  Serial.println("Global Timer Expired");
+  Serial.println(F("Global Timer Expired"));
 	globalTimer_expired = true;
 }
 
-static void RACom::responseTimerCallback( TimerHandle_t xTimer )
+/* static */ void RACom::responseTimerCallback( TimerHandle_t xTimer )
 {
   Serial.print('\n');
-  Serial.println("Response Timer Expired");
+  Serial.println(F("Response Timer Expired"));
 	responseTimer_expired = true;
 }

@@ -4,6 +4,7 @@
 
 #include "Arduino.h"
 #include "SoftwareSerial.h"
+//#include <NeoSWSerial.h>
 //#include <limits.h>
 
 /* Kernel includes. */
@@ -28,6 +29,7 @@ public:
     void commandMode();
     void testCom();
     void comAlgo();
+    void setupTimers();
     //void setNextPosArray(byte replace[]);
 
 private:
@@ -37,14 +39,9 @@ private:
 
     void findMyNext();
     void broadcast();
-    int getMit();
+    //int getMit();
     int getSucc();
 
-    //void startOperation(unsigned long timeout);
-    //bool isOperationTimedOut() const;
-    //unsigned long operationDuration() const;
-
-    void setupTimers();
     void startGlobalTimer();
     void startResponseTimer();
     static void globalTimerCallback(TimerHandle_t xTimer);
