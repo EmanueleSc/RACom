@@ -17,8 +17,8 @@ static char _buffer[50];
 /* FreeRtos Staff */
 TimerHandle_t xGlobalTimer;
 TimerHandle_t xResponseTimer;
-static bool globalTimer_expired = false;
-static bool responseTimer_expired = false;
+static bool globalTimer_expired;
+static bool responseTimer_expired;
 
 // Array of next positions
 //static byte nextPositions[NUM_NEXT_POS] = { 225, 225, 225, 225, 225, 225, 225, 225  };
@@ -43,8 +43,8 @@ void RACom::init(byte id, byte number_of_ants) {
     _buffer[0] = '\0';
 
     // Start softweare timers
-    /* globalTimer_expired = false;
-    responseTimer_expired = false; */
+    globalTimer_expired = false;
+    responseTimer_expired = false;
 }
 
 void RACom::comunicationMode() {
@@ -231,7 +231,7 @@ int RACom::getSucc() {
 }
 
 void RACom::setupTimers() {
-  //Serial.println("Setup timers");
+  Serial.println(F("Setup timers"));
 
   xGlobalTimer = xTimerCreate(
         "Global_Timer",               /* A text name, purely to help debugging. */
@@ -269,14 +269,14 @@ void RACom::startResponseTimer() {
   xTimerStart( xResponseTimer, 0 );
 }
 
-/* static */ void RACom::globalTimerCallback( TimerHandle_t xTimer )
+static void RACom::globalTimerCallback( TimerHandle_t xTimer )
 {
   Serial.print('\n');
   Serial.println(F("Global Timer Expired"));
 	globalTimer_expired = true;
 }
 
-/* static */ void RACom::responseTimerCallback( TimerHandle_t xTimer )
+static void RACom::responseTimerCallback( TimerHandle_t xTimer )
 {
   Serial.print('\n');
   Serial.println(F("Response Timer Expired"));
