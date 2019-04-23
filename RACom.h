@@ -31,8 +31,8 @@ public:
     void comAlgo();
     void setupTimers();
     void setNextPosArray(byte replace[]);
-    
     byte* getRecvPosArray(byte num_ant);
+    bool startupTimerExpired();
 
 private:
     // methods for comAlgo

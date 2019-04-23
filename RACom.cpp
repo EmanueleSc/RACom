@@ -13,6 +13,8 @@ static char _buffer[50];
 /* FreeRtos Staff */
 TimerHandle_t xGlobalTimer;
 TimerHandle_t xResponseTimer;
+
+static bool startupTimer_expired;
 static bool globalTimer_expired;
 static bool responseTimer_expired;
 
@@ -44,6 +46,7 @@ void RACom::init(byte id, byte number_of_ants) {
     _buffer[0] = '\0'; // flush the buffer
 
     // Start softweare timers
+    startupTimer_expired = false;
     globalTimer_expired = false;
     responseTimer_expired = false;
 }
@@ -155,6 +158,10 @@ byte* RACom::getRecvPosArray(byte num_ant) {
   if(num_ant == 3) return recvPos3;
   if(num_ant == 4) return recvPos4;
   if(num_ant == 5) return recvPos5;
+}
+
+bool RACom::startupTimerExpired() {
+  return startupTimer_expired;
 }
 
 void RACom::findMyNext() {
@@ -326,7 +333,8 @@ void RACom::globalTimerCallback( TimerHandle_t xTimer )
 {
   Serial.print('\n');
   Serial.println(F("Global Timer Expired"));
-	globalTimer_expired = true;
+	startupTimer_expired = true;
+  globalTimer_expired = true;
 }
 
 void RACom::responseTimerCallback( TimerHandle_t xTimer )
