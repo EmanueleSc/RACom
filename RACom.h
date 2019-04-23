@@ -35,8 +35,6 @@ public:
 private:
     // methods for comAlgo
     void broadcastPhase();
-    void readPhase();
-
     void findMyNext();
     void broadcast();
     //int getMit();

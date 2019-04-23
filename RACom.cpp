@@ -7,10 +7,6 @@ static byte initFlag = 0;
 static byte MY_ID;
 static byte NUM_ANTS; // Number of ants in the antNet
 static byte currSucc;
-
-//unsigned long ticksAtStart;
-//unsigned long cmdTimeout;
-
 static byte _bufsize;
 static char _buffer[50];
 
@@ -28,8 +24,8 @@ void RACom::init(byte id, byte number_of_ants) {
     MySerial.begin(BAUND_RATE);
     while(!MySerial);
     
-    Serial.println(F("Wireless module serial started"));
-    //Serial.println(BAUND_RATE);
+    Serial.print(F("Wireless module serial started at "));
+    Serial.println(BAUND_RATE);
 
     pinMode(SET_PIN, OUTPUT); // Connected to set input
 
@@ -38,9 +34,7 @@ void RACom::init(byte id, byte number_of_ants) {
     currSucc = MY_ID;
     
     _bufsize = sizeof(_buffer)/sizeof(char);
-    // flush the buffer
-    //memset(_buffer, 0, _bufsize);
-    _buffer[0] = '\0';
+    _buffer[0] = '\0'; // flush the buffer
 
     // Start softweare timers
     globalTimer_expired = false;
@@ -74,7 +68,6 @@ void RACom::broadcastPhase() {
     findMyNext();
     broadcast();
     startResponseTimer();
-    //memset(_buffer, 0, _bufsize);
     _buffer[0] = '\0';
 
     // iterate until response timeout is not expired
@@ -89,7 +82,7 @@ void RACom::broadcastPhase() {
       }
     }
 
-    if(strlen(_buffer) != 0 && getSucc() == MY_ID) {
+    if(getSucc() == MY_ID) {
       currSucc = MY_ID;
       isMyTurn = true;
     } 
@@ -104,7 +97,16 @@ void RACom::broadcastPhase() {
   startGlobalTimer();
 }
 
-void RACom::readPhase() {
+void RACom::comAlgo() {
+  if(initFlag == 0) {
+    MySerial.flush();
+    startGlobalTimer();
+    initFlag = 1;
+  }
+  
+  // Global timeout
+  if(!globalTimer_expired) {
+    // Read phase
     if(MySerial.available()) {
 
       if((char)MySerial.read() == '@') {
@@ -120,19 +122,6 @@ void RACom::readPhase() {
       }
 
     }
-
-}
-
-void RACom::comAlgo() {
-  if(initFlag == 0) {
-    MySerial.flush();
-    startGlobalTimer();
-    initFlag = 1;
-  }
-  
-  // Global timeout
-  if(!globalTimer_expired) {
-    readPhase();
   }
   else {
     // I'm the only one in the network
@@ -269,14 +258,14 @@ void RACom::startResponseTimer() {
   xTimerStart( xResponseTimer, 0 );
 }
 
-static void RACom::globalTimerCallback( TimerHandle_t xTimer )
+void RACom::globalTimerCallback( TimerHandle_t xTimer )
 {
   Serial.print('\n');
   Serial.println(F("Global Timer Expired"));
 	globalTimer_expired = true;
 }
 
-static void RACom::responseTimerCallback( TimerHandle_t xTimer )
+void RACom::responseTimerCallback( TimerHandle_t xTimer )
 {
   Serial.print('\n');
   Serial.println(F("Response Timer Expired"));
