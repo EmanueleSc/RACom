@@ -18,7 +18,13 @@ static bool responseTimer_expired;
 
 // Array of next positions 
 static byte nextPositions[NUM_NEXT_POS] = { 225, 225, 225, 225, 225, 225, 225, 225  }; // my pos to brodcast
-static byte recvPos[NUM_NEXT_POS] = { 225, 225, 225, 225, 225, 225, 225, 225  }; // received pos for outside
+
+// One array for each ant
+static byte recvPos1[NUM_NEXT_POS] = { 225, 225, 225, 225, 225, 225, 225, 225  }; // received pos for outside
+static byte recvPos2[NUM_NEXT_POS] = { 225, 225, 225, 225, 225, 225, 225, 225  }; // received pos for outside
+static byte recvPos3[NUM_NEXT_POS] = { 225, 225, 225, 225, 225, 225, 225, 225  }; // received pos for outside
+static byte recvPos4[NUM_NEXT_POS] = { 225, 225, 225, 225, 225, 225, 225, 225  }; // received pos for outside
+static byte recvPos5[NUM_NEXT_POS] = { 225, 225, 225, 225, 225, 225, 225, 225  }; // received pos for outside
 
 
 void RACom::init(byte id, byte number_of_ants) {
@@ -92,7 +98,7 @@ void RACom::broadcastPhase() {
     Serial.println(_buffer);
 
     // set recvPos array with outside data
-    setRecvPos();
+    setRecvPosArray();
 
   } 
   while(strlen(_buffer) == 0 || isMyTurn == true);
@@ -120,7 +126,7 @@ void RACom::comAlgo() {
         Serial.println(_buffer);
 
         // set recvPos array with outside data
-        setRecvPos();
+        setRecvPosArray();
         
         if(getSucc() == MY_ID) {
           currSucc = MY_ID;
@@ -143,8 +149,12 @@ void RACom::setNextPosArray(byte replace[]) {
   }
 }
 
-byte* RACom::getRecvPosArray() {
-  return recvPos;
+byte* RACom::getRecvPosArray(byte num_ant) {
+  if(num_ant == 1) return recvPos1;
+  if(num_ant == 2) return recvPos2;
+  if(num_ant == 3) return recvPos3;
+  if(num_ant == 4) return recvPos4;
+  if(num_ant == 5) return recvPos5;
 }
 
 void RACom::findMyNext() {
@@ -189,24 +199,28 @@ void RACom::broadcast() {
   resetNextPosArray();
 }
 
-/* int RACom::getMit() {
-  char copy[50];
-  size_t len = sizeof(copy);
-  strncpy(copy, _buffer, len);
-  copy[len-1] = '\0';
-  
-  char * pch = strtok(copy, "#");
+/*int RACom::getMit() {
+  if( strlen(_buffer) != 0 ) { 
+    char copy[50];
+    size_t len = sizeof(copy);
+    strncpy(copy, _buffer, len);
+    copy[len-1] = '\0';
 
-  int i = 0;
-  while (pch != NULL)
-  {
-    if(i == 0) break;
-    pch = strtok (NULL, "#");
-    i++;
-  }  
+    char * pch = strtok(copy, "#");
+
+    int i = 0;
+    while (pch != NULL)
+    {
+      if(i == 0) break;
+      pch = strtok (NULL, "#");
+      i++;
+    }  
+    
+    return atoi(pch);
+  }
   
-  return atoi(pch);
-} */
+  return NUM_ANTS + 1; // not existing ANT
+}*/
 
 int RACom::getSucc() {
   if( strlen(_buffer) != 0 ) {
@@ -230,8 +244,10 @@ int RACom::getSucc() {
   return NUM_ANTS + 1; // not existing ANT
 }
 
-void RACom::setRecvPos() {
+void RACom::setRecvPosArray() {
   if( strlen(_buffer) != 0  ) {
+    int mit;
+
     char copy[50];
     size_t len = sizeof(copy);
     strncpy(copy, _buffer, len);
@@ -241,8 +257,17 @@ void RACom::setRecvPos() {
     int i = 0;
     
     while (pch != NULL) {
+      if(i == 0) {
+        mit = atoi(pch);
+      }
+
       if(i >= 2 && i <= 9) {
-        recvPos[i - 2] = (byte) atoi(pch);
+        if(mit == 1) recvPos1[i - 2] = (byte) atoi(pch);
+        if(mit == 2) recvPos2[i - 2] = (byte) atoi(pch);
+        if(mit == 3) recvPos3[i - 2] = (byte) atoi(pch);
+        if(mit == 4) recvPos4[i - 2] = (byte) atoi(pch);
+        if(mit == 5) recvPos5[i - 2] = (byte) atoi(pch);
+
         if(i == 9) break;
       }
       pch = strtok (NULL, "#");
