@@ -163,7 +163,6 @@ void RACom::broadcast() {
   MySerial.print(currSucc); // succ
   MySerial.print('#');
   
-
   for(int i = 0; i < NUM_NEXT_POS; i++) {
     MySerial.print(nextPositions[i]); // next pos
     Serial.print(nextPositions[i]);
@@ -176,6 +175,7 @@ void RACom::broadcast() {
 
   MySerial.print('$'); // stop
 
+  resetNextPosArray();
 }
 
 /* int RACom::getMit() {
@@ -217,6 +217,12 @@ int RACom::getSucc() {
   }
 
   return NUM_ANTS + 1; // not existing ANT
+}
+
+void RACom::resetNextPosArray() {
+  for(int i = 0; i < NUM_NEXT_POS; i++) {
+    nextPositions[i] = 225;
+  }
 }
 
 void RACom::setupTimers() {

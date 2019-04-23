@@ -39,6 +39,7 @@ private:
     void broadcast();
     //int getMit();
     int getSucc();
+    void resetNextPosArray();
 
     void startGlobalTimer();
     void startResponseTimer();
