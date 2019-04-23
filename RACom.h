@@ -31,6 +31,7 @@ public:
     void comAlgo();
     void setupTimers();
     void setNextPosArray(byte replace[]);
+    byte* getRecvPosArray();
 
 private:
     // methods for comAlgo
@@ -39,6 +40,7 @@ private:
     void broadcast();
     //int getMit();
     int getSucc();
+    void setRecvPos();
     void resetNextPosArray();
 
     void startGlobalTimer();

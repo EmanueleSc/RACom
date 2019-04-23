@@ -16,8 +16,9 @@ TimerHandle_t xResponseTimer;
 static bool globalTimer_expired;
 static bool responseTimer_expired;
 
-// Array of next positions
-static byte nextPositions[NUM_NEXT_POS] = { 225, 225, 225, 225, 225, 225, 225, 225  };
+// Array of next positions 
+static byte nextPositions[NUM_NEXT_POS] = { 225, 225, 225, 225, 225, 225, 225, 225  }; // my pos to brodcast
+static byte recvPos[NUM_NEXT_POS] = { 225, 225, 225, 225, 225, 225, 225, 225  }; // received pos for outside
 
 
 void RACom::init(byte id, byte number_of_ants) {
@@ -90,6 +91,9 @@ void RACom::broadcastPhase() {
     Serial.print(F("<--- Message received after broadcast: "));
     Serial.println(_buffer);
 
+    // set recvPos array with outside data
+    setRecvPos();
+
   } 
   while(strlen(_buffer) == 0 || isMyTurn == true);
 
@@ -114,6 +118,9 @@ void RACom::comAlgo() {
         
         Serial.print(F("<--- Message received: "));
         Serial.println(_buffer);
+
+        // set recvPos array with outside data
+        setRecvPos();
         
         if(getSucc() == MY_ID) {
           currSucc = MY_ID;
@@ -134,6 +141,10 @@ void RACom::setNextPosArray(byte replace[]) {
   for(int i = 0; i < NUM_NEXT_POS; i++) {
     nextPositions[i] = replace[i];
   }
+}
+
+byte* RACom::getRecvPosArray() {
+  return recvPos;
 }
 
 void RACom::findMyNext() {
@@ -218,6 +229,28 @@ int RACom::getSucc() {
 
   return NUM_ANTS + 1; // not existing ANT
 }
+
+void RACom::setRecvPos() {
+  if( strlen(_buffer) != 0  ) {
+    char copy[50];
+    size_t len = sizeof(copy);
+    strncpy(copy, _buffer, len);
+    copy[len-1] = '\0';
+
+    char * pch = strtok(copy, "#");
+    int i = 0;
+    
+    while (pch != NULL) {
+      if(i >= 2 && i <= 9) {
+        recvPos[i - 2] = (byte) atoi(pch);
+        if(i == 9) break;
+      }
+      pch = strtok (NULL, "#");
+      i++;
+    }
+
+  }
+} 
 
 void RACom::resetNextPosArray() {
   for(int i = 0; i < NUM_NEXT_POS; i++) {
