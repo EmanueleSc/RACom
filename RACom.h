@@ -30,7 +30,7 @@ public:
     void testCom();
     void comAlgo();
     void setupTimers();
-    //void setNextPosArray(byte replace[]);
+    void setNextPosArray(byte replace[]);
 
 private:
     // methods for comAlgo

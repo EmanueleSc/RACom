@@ -17,7 +17,7 @@ static bool globalTimer_expired;
 static bool responseTimer_expired;
 
 // Array of next positions
-//static byte nextPositions[NUM_NEXT_POS] = { 225, 225, 225, 225, 225, 225, 225, 225  };
+static byte nextPositions[NUM_NEXT_POS] = { 225, 225, 225, 225, 225, 225, 225, 225  };
 
 
 void RACom::init(byte id, byte number_of_ants) {
@@ -130,11 +130,11 @@ void RACom::comAlgo() {
   
 }
 
-/* void RACom::setNextPosArray(byte replace[]) {
+void RACom::setNextPosArray(byte replace[]) {
   for(int i = 0; i < NUM_NEXT_POS; i++) {
     nextPositions[i] = replace[i];
   }
-} */
+}
 
 void RACom::findMyNext() {
   currSucc++;
@@ -154,17 +154,17 @@ void RACom::broadcast() {
   Serial.print(MY_ID);
   Serial.print('#');
   Serial.print(currSucc);
-  //Serial.print('#');
+  Serial.print('#');
 
   // Wireless send
   MySerial.print('@'); // start
   MySerial.print(MY_ID); // mit
   MySerial.print('#');
   MySerial.print(currSucc); // succ
-  //MySerial.print('#');
+  MySerial.print('#');
   
 
-  /* for(int i = 0; i < NUM_NEXT_POS; i++) {
+  for(int i = 0; i < NUM_NEXT_POS; i++) {
     MySerial.print(nextPositions[i]); // next pos
     Serial.print(nextPositions[i]);
   
@@ -172,7 +172,7 @@ void RACom::broadcast() {
       MySerial.print('#');
       Serial.print('#');
     }
-  } */
+  }
 
   MySerial.print('$'); // stop
 
