@@ -14,7 +14,6 @@ static char _buffer[50];
 TimerHandle_t xGlobalTimer;
 TimerHandle_t xResponseTimer;
 
-static bool startupTimer_expired;
 static bool globalTimer_expired;
 static bool responseTimer_expired;
 
@@ -22,12 +21,16 @@ static bool responseTimer_expired;
 static byte nextPositions[NUM_NEXT_POS] = { 225, 225, 225, 225, 225, 225, 225, 225  }; // my pos to brodcast
 
 // One array for each ant
-static byte recvPos1[NUM_NEXT_POS] = { 225, 225, 225, 225, 225, 225, 225, 225  }; // received pos for outside
-static byte recvPos2[NUM_NEXT_POS] = { 225, 225, 225, 225, 225, 225, 225, 225  }; // received pos for outside
-static byte recvPos3[NUM_NEXT_POS] = { 225, 225, 225, 225, 225, 225, 225, 225  }; // received pos for outside
-static byte recvPos4[NUM_NEXT_POS] = { 225, 225, 225, 225, 225, 225, 225, 225  }; // received pos for outside
-static byte recvPos5[NUM_NEXT_POS] = { 225, 225, 225, 225, 225, 225, 225, 225  }; // received pos for outside
+static byte recvPos1[NUM_NEXT_POS] = { 225, 225, 225, 225, 225, 225, 225, 225  }; // received pos from outside
+static byte recvPos2[NUM_NEXT_POS] = { 225, 225, 225, 225, 225, 225, 225, 225  }; // received pos from outside
+static byte recvPos3[NUM_NEXT_POS] = { 225, 225, 225, 225, 225, 225, 225, 225  }; // received pos from outside
+static byte recvPos4[NUM_NEXT_POS] = { 225, 225, 225, 225, 225, 225, 225, 225  }; // received pos from outside
+static byte recvPos5[NUM_NEXT_POS] = { 225, 225, 225, 225, 225, 225, 225, 225  }; // received pos from outside
 
+// Task RGB and motion pointers
+TaskHandle_t* taskRGB;
+TaskHandle_t* taskMotion;
+static bool resumedTasks;
 
 void RACom::init(byte id, byte number_of_ants) {
     MySerial.begin(BAUND_RATE);
@@ -46,7 +49,7 @@ void RACom::init(byte id, byte number_of_ants) {
     _buffer[0] = '\0'; // flush the buffer
 
     // Start softweare timers
-    startupTimer_expired = false;
+    resumedTasks = false;
     globalTimer_expired = false;
     responseTimer_expired = false;
 }
@@ -160,8 +163,9 @@ byte* RACom::getRecvPosArray(byte num_ant) {
   if(num_ant == 5) return recvPos5;
 }
 
-bool RACom::startupTimerExpired() {
-  return startupTimer_expired;
+void RACom::setTaskHandle(TaskHandle_t* xHandleRGB, TaskHandle_t* xHandleMotion) {
+  taskRGB = xHandleRGB;
+  taskMotion = xHandleMotion;
 }
 
 void RACom::findMyNext() {
@@ -205,29 +209,6 @@ void RACom::broadcast() {
 
   resetNextPosArray();
 }
-
-/*int RACom::getMit() {
-  if( strlen(_buffer) != 0 ) { 
-    char copy[50];
-    size_t len = sizeof(copy);
-    strncpy(copy, _buffer, len);
-    copy[len-1] = '\0';
-
-    char * pch = strtok(copy, "#");
-
-    int i = 0;
-    while (pch != NULL)
-    {
-      if(i == 0) break;
-      pch = strtok (NULL, "#");
-      i++;
-    }  
-    
-    return atoi(pch);
-  }
-  
-  return NUM_ANTS + 1; // not existing ANT
-}*/
 
 int RACom::getSucc() {
   if( strlen(_buffer) != 0 ) {
@@ -333,7 +314,12 @@ void RACom::globalTimerCallback( TimerHandle_t xTimer )
 {
   Serial.print('\n');
   Serial.println(F("Global Timer Expired"));
-	startupTimer_expired = true;
+	
+  if(resumedTasks == false) {
+    vTaskResume( *taskRGB );
+    vTaskResume( *taskMotion );
+    resumedTasks = true;
+  }
   globalTimer_expired = true;
 }
 

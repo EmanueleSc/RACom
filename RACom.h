@@ -32,14 +32,13 @@ public:
     void setupTimers();
     void setNextPosArray(byte replace[]);
     byte* getRecvPosArray(byte num_ant);
-    bool startupTimerExpired();
+    void setTaskHandle(TaskHandle_t* xHandleRGB, TaskHandle_t* xHandleMotion);
 
 private:
     // methods for comAlgo
     void broadcastPhase();
     void findMyNext();
     void broadcast();
-    //int getMit();
     int getSucc();
     void setRecvPosArray();
     void resetNextPosArray();
