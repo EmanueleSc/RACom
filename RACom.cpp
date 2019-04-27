@@ -32,6 +32,8 @@ TaskHandle_t* taskRGB;
 TaskHandle_t* taskMotion;
 static bool resumedTasks;
 
+static byte startAndStop; // 0 = stop, 1 = start
+
 void RACom::init(byte id, byte number_of_ants) {
     MySerial.begin(BAUND_RATE);
     while(!MySerial);
@@ -52,6 +54,7 @@ void RACom::init(byte id, byte number_of_ants) {
     resumedTasks = false;
     globalTimer_expired = false;
     responseTimer_expired = false;
+    startAndStop = 1;
 }
 
 void RACom::comunicationMode() {
@@ -168,6 +171,10 @@ void RACom::setTaskHandle(TaskHandle_t* xHandleRGB, TaskHandle_t* xHandleMotion)
   taskMotion = xHandleMotion;
 }
 
+void RACom::setStartAndStop(byte state) {
+  startAndStop = state;
+}
+
 void RACom::findMyNext() {
   currSucc++;
 
@@ -198,14 +205,21 @@ void RACom::broadcast() {
   for(int i = 0; i < NUM_NEXT_POS; i++) {
     MySerial.print(nextPositions[i]); // next pos
     Serial.print(nextPositions[i]);
+    
+    MySerial.print('#');
+    Serial.print('#');
   
-    if(i != NUM_NEXT_POS - 1) {
+    /* if(i != NUM_NEXT_POS - 1) {
       MySerial.print('#');
       Serial.print('#');
-    }
+    } */
   }
 
-  MySerial.print('$'); // stop
+  // Send start and stop byte
+  MySerial.print(startAndStop);
+  Serial.print(startAndStop);
+
+  MySerial.print('$'); // end char
 
   resetNextPosArray();
 }
@@ -235,6 +249,7 @@ int RACom::getSucc() {
 void RACom::setRecvPosArray() {
   if( strlen(_buffer) != 0  ) {
     int mit;
+    int ss;
 
     char copy[50];
     size_t len = sizeof(copy);
@@ -245,6 +260,8 @@ void RACom::setRecvPosArray() {
     int i = 0;
     
     while (pch != NULL) {
+      // Frame example: @ 1 # 2 # 225 # 225 # 225 # 225 # 225 # 225 # 225 # 225 # 0 || 1 $
+
       if(i == 0) {
         mit = atoi(pch);
       }
@@ -256,8 +273,25 @@ void RACom::setRecvPosArray() {
         if(mit == 4) recvPos4[i - 2] = (byte) atoi(pch);
         if(mit == 5) recvPos5[i - 2] = (byte) atoi(pch);
 
-        if(i == 9) break;
+        //if(i == 9) break;
       }
+
+      // 6 is the id of the special ant
+      if(i == 10 && mit == 6) {
+        ss = atoi(pch);
+        
+        if(ss == 0) {
+          // Suspend RGB and Motion tasks
+          vTaskSuspend( *taskRGB );
+          vTaskSuspend( *taskMotion );
+        }
+        else if(ss == 1) {
+          // Resume RGB and Motion tasks
+          vTaskResume( *taskRGB );
+          vTaskResume( *taskMotion );
+        }
+      }
+
       pch = strtok (NULL, "#");
       i++;
     }
