@@ -34,8 +34,9 @@ public:
     void setNextPosArray(byte replace[]);
     byte* getRecvPosArray(byte num_ant);
     void setTaskHandle(TaskHandle_t* xHandleRGB, TaskHandle_t* xHandleMotion);
-
     void setStartAndStop(byte state); // 0 = stop, 1 = start
+    void setMyCurrentPosition(byte pos);
+    byte getCurrentPosOfAnt(byte num_ant);
 
 private:
     // methods for comAlgo

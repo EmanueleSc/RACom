@@ -18,14 +18,14 @@ static bool globalTimer_expired;
 static bool responseTimer_expired;
 
 // Array of next positions 
-static byte nextPositions[NUM_NEXT_POS] = { 225, 225, 225, 225, 225, 225, 225, 225  }; // my pos to brodcast
+static byte nextPositions[NUM_NEXT_POS] = { 225, 225, 225, 225, 225, 225, 225, 225  }; // my next pos to brodcast
 
 // One array for each ant
-static byte recvPos1[NUM_NEXT_POS] = { 225, 225, 225, 225, 225, 225, 225, 225  }; // received pos from outside
-static byte recvPos2[NUM_NEXT_POS] = { 225, 225, 225, 225, 225, 225, 225, 225  }; // received pos from outside
-static byte recvPos3[NUM_NEXT_POS] = { 225, 225, 225, 225, 225, 225, 225, 225  }; // received pos from outside
-static byte recvPos4[NUM_NEXT_POS] = { 225, 225, 225, 225, 225, 225, 225, 225  }; // received pos from outside
-static byte recvPos5[NUM_NEXT_POS] = { 225, 225, 225, 225, 225, 225, 225, 225  }; // received pos from outside
+static byte recvPos1[NUM_NEXT_POS] = { 225, 225, 225, 225, 225, 225, 225, 225  }; // received next pos from outside ant 1
+static byte recvPos2[NUM_NEXT_POS] = { 225, 225, 225, 225, 225, 225, 225, 225  }; // received next pos from outside ant 2
+static byte recvPos3[NUM_NEXT_POS] = { 225, 225, 225, 225, 225, 225, 225, 225  }; // received next pos from outside ant 3
+static byte recvPos4[NUM_NEXT_POS] = { 225, 225, 225, 225, 225, 225, 225, 225  }; // received next pos from outside ant 4
+static byte recvPos5[NUM_NEXT_POS] = { 225, 225, 225, 225, 225, 225, 225, 225  }; // received next pos from outside ant 5
 
 // Task RGB and motion pointers
 TaskHandle_t* taskRGB;
@@ -33,6 +33,14 @@ TaskHandle_t* taskMotion;
 static bool resumedTasks;
 
 static byte startAndStop; // 0 = stop, 1 = start
+static byte myCurrentPosition; // my current pos to brodcast
+
+static byte currPos1 = 225; // received current pos from outside ant 1
+static byte currPos2 = 225; // received current pos from outside ant 2
+static byte currPos3 = 225; // received current pos from outside ant 3
+static byte currPos4 = 225; // received current pos from outside ant 4
+static byte currPos5 = 225; // received current pos from outside ant 5
+
 
 void RACom::init(byte id, byte number_of_ants) {
     MySerial.begin(BAUND_RATE);
@@ -55,6 +63,7 @@ void RACom::init(byte id, byte number_of_ants) {
     globalTimer_expired = false;
     responseTimer_expired = false;
     startAndStop = 1;
+    myCurrentPosition = 225;
 }
 
 void RACom::comunicationMode() {
@@ -175,6 +184,18 @@ void RACom::setStartAndStop(byte state) {
   startAndStop = state;
 }
 
+void RACom::setMyCurrentPosition(byte pos) {
+  myCurrentPosition = pos;
+}
+
+byte RACom::getCurrentPosOfAnt(byte num_ant) {
+  if(num_ant == 1) return currPos1;
+  if(num_ant == 2) return currPos2;
+  if(num_ant == 3) return currPos3;
+  if(num_ant == 4) return currPos4;
+  if(num_ant == 5) return currPos5;
+}
+
 void RACom::findMyNext() {
   currSucc++;
 
@@ -190,34 +211,39 @@ void RACom::findMyNext() {
 
 void RACom::broadcast() {
   Serial.print(F("<--- Message Sent: "));
+  
+  // Wireless send
+  MySerial.print('@'); // start char
+  
+  MySerial.print(MY_ID); // mit
   Serial.print(MY_ID);
-  Serial.print('#');
-  Serial.print(currSucc);
+  
+  MySerial.print('#'); // separator
   Serial.print('#');
 
-  // Wireless send
-  MySerial.print('@'); // start
-  MySerial.print(MY_ID); // mit
-  MySerial.print('#');
   MySerial.print(currSucc); // succ
-  MySerial.print('#');
+  Serial.print(currSucc);
   
+  MySerial.print('#'); // separator
+  Serial.print('#');
+  
+  // next positions
   for(int i = 0; i < NUM_NEXT_POS; i++) {
-    MySerial.print(nextPositions[i]); // next pos
+    MySerial.print(nextPositions[i]); 
     Serial.print(nextPositions[i]);
     
     MySerial.print('#');
     Serial.print('#');
-  
-    /* if(i != NUM_NEXT_POS - 1) {
-      MySerial.print('#');
-      Serial.print('#');
-    } */
   }
 
-  // Send start and stop byte
-  MySerial.print(startAndStop);
+  MySerial.print(startAndStop); // start and stop
   Serial.print(startAndStop);
+
+  MySerial.print('#'); // separator
+  Serial.print('#');
+
+  MySerial.print(myCurrentPosition); // current position
+  Serial.print(myCurrentPosition);
 
   MySerial.print('$'); // end char
 
@@ -260,7 +286,8 @@ void RACom::setRecvPosArray() {
     int i = 0;
     
     while (pch != NULL) {
-      // Frame example: @ 1 # 2 # 225 # 225 # 225 # 225 # 225 # 225 # 225 # 225 # 0 || 1 $
+      // Frame example: @ 1 # 2 # 225 # 225 # 225 # 225 # 225 # 225 # 225 # 225 # 1 # 225 $
+      // @ mit # succ # next_pos # next_pos # next_pos # next_pos # next_pos # next_pos # next_pos # next_pos # start_stop # current_pos $
 
       if(i == 0) {
         mit = atoi(pch);
@@ -272,11 +299,8 @@ void RACom::setRecvPosArray() {
         if(mit == 3) recvPos3[i - 2] = (byte) atoi(pch);
         if(mit == 4) recvPos4[i - 2] = (byte) atoi(pch);
         if(mit == 5) recvPos5[i - 2] = (byte) atoi(pch);
-
-        //if(i == 9) break;
       }
 
-      // 6 is the id of the special ant
       if(i == 10 && mit == SPECIAL_ANT_ID) {
         ss = atoi(pch);
         
@@ -290,6 +314,14 @@ void RACom::setRecvPosArray() {
           vTaskResume( *taskRGB );
           vTaskResume( *taskMotion );
         }
+      }
+
+      if(i == 11) {
+        if(mit == 1) currPos1 = (byte) atoi(pch);
+        if(mit == 2) currPos2 = (byte) atoi(pch);
+        if(mit == 3) currPos3 = (byte) atoi(pch);
+        if(mit == 4) currPos4 = (byte) atoi(pch);
+        if(mit == 5) currPos5 = (byte) atoi(pch);
       }
 
       pch = strtok (NULL, "#");
@@ -344,8 +376,7 @@ void RACom::startResponseTimer() {
   xTimerStart( xResponseTimer, 0 );
 }
 
-void RACom::globalTimerCallback( TimerHandle_t xTimer )
-{
+void RACom::globalTimerCallback( TimerHandle_t xTimer ) {
   Serial.print('\n');
   Serial.println(F("Global Timer Expired"));
 	
@@ -357,8 +388,7 @@ void RACom::globalTimerCallback( TimerHandle_t xTimer )
   globalTimer_expired = true;
 }
 
-void RACom::responseTimerCallback( TimerHandle_t xTimer )
-{
+void RACom::responseTimerCallback( TimerHandle_t xTimer ) {
   Serial.print('\n');
   Serial.println(F("Response Timer Expired"));
 	responseTimer_expired = true;
