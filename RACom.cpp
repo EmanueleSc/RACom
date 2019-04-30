@@ -277,7 +277,7 @@ void RACom::setRecvPosArray() {
       }
 
       // 6 is the id of the special ant
-      if(i == 10 && mit == 6) {
+      if(i == 10 && mit == SPECIAL_ANT_ID) {
         ss = atoi(pch);
         
         if(ss == 0) {
@@ -349,7 +349,7 @@ void RACom::globalTimerCallback( TimerHandle_t xTimer )
   Serial.print('\n');
   Serial.println(F("Global Timer Expired"));
 	
-  if(resumedTasks == false) {
+  if(resumedTasks == false && taskRGB != NULL && taskMotion != NULL) {
     vTaskResume( *taskRGB );
     vTaskResume( *taskMotion );
     resumedTasks = true;
