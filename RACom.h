@@ -18,7 +18,7 @@ enum
     TX = 6,
     SET_PIN = 13,
     RING_ROUND_TRIP_TIMEOUT = 10000 / portTICK_PERIOD_MS, // 10 sec for test
-    RESPONSE_TIMEOUT = 200 / portTICK_PERIOD_MS, // 200 millisec for test
+    RESPONSE_TIMEOUT = 400 / portTICK_PERIOD_MS, // 400 millisec for test
     NUM_NEXT_POS = 8,
     SPECIAL_ANT_ID = 3,
     BUFFER_DIM = 60
