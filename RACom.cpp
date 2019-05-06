@@ -247,7 +247,7 @@ void RACom::broadcast() {
 
   MySerial.print('$'); // end char
 
-  resetNextPosArray();
+  //resetNextPosArray();
 }
 
 int RACom::getSucc() {
