@@ -107,16 +107,13 @@ void RACom::broadcastPhase() {
       }
     }
 
-    Serial.print(F("<--- Message received after broadcast: "));
-    Serial.println(_buffer);
-
     if(/* getSucc() == MY_ID */ setRecvPosArray() == MY_ID) {
       currSucc = MY_ID;
       isMyTurn = true;
     } 
 
-    //Serial.print(F("<--- Message received after broadcast: "));
-    //Serial.println(_buffer);
+    Serial.print(F("<--- Message received after broadcast: "));
+    Serial.println(_buffer);
 
     // set recvPos array with outside data
     //setRecvPosArray();
