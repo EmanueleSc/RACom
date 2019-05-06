@@ -21,7 +21,7 @@ enum
     RESPONSE_TIMEOUT = 200 / portTICK_PERIOD_MS, // 200 millisec for test
     NUM_NEXT_POS = 8,
     SPECIAL_ANT_ID = 3,
-    BUFFER_DIM = 80
+    BUFFER_DIM = 60
 };
 
 class RACom {
@@ -44,7 +44,6 @@ private:
     void broadcastPhase();
     void findMyNext();
     void broadcast();
-    //int getSucc();
     int setRecvPosArray();
     void resetNextPosArray();
 

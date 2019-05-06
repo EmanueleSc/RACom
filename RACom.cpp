@@ -107,16 +107,13 @@ void RACom::broadcastPhase() {
       }
     }
 
-    if(/* getSucc() == MY_ID */ setRecvPosArray() == MY_ID) {
-      currSucc = MY_ID;
-      isMyTurn = true;
-    } 
-
     Serial.print(F("<--- Message received after broadcast: "));
     Serial.println(_buffer);
 
-    // set recvPos array with outside data
-    //setRecvPosArray();
+    if(setRecvPosArray() == MY_ID) {
+      currSucc = MY_ID;
+      isMyTurn = true;
+    } 
 
   } 
   while(strlen(_buffer) == 0 || isMyTurn == true);
@@ -143,10 +140,7 @@ void RACom::comAlgo() {
         Serial.print(F("<--- Message received: "));
         Serial.println(_buffer);
 
-        // set recvPos array with outside data
-        //setRecvPosArray();
-        
-        if(/* getSucc() == MY_ID */ setRecvPosArray() == MY_ID) {
+        if(setRecvPosArray() == MY_ID) {
           currSucc = MY_ID;
           broadcastPhase();
         }
@@ -247,30 +241,7 @@ void RACom::broadcast() {
 
   MySerial.print('$'); // end char
 
-  //resetNextPosArray();
 }
-
-/* int RACom::getSucc() {
-  if( strlen(_buffer) != 0 ) {
-    char copy[BUFFER_DIM];
-    size_t len = sizeof(copy);
-    strncpy(copy, _buffer, len);
-    copy[len-1] = '\0';
-
-    char * pch = strtok(copy, "#");
-    int i = 0;
-    while (pch != NULL)
-    {
-      if(i == 1) break;
-      pch = strtok (NULL, "#");
-      i++;
-    }
-
-    return atoi(pch);
-  }
-
-  return NUM_ANTS + 1; // not existing ANT
-} */
 
 int RACom::setRecvPosArray() {
   if( strlen(_buffer) != 0  ) {
