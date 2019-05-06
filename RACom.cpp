@@ -8,7 +8,7 @@ static byte MY_ID;
 static byte NUM_ANTS; // Number of ants in the antNet
 static byte currSucc;
 static byte _bufsize;
-static char _buffer[50];
+static char _buffer[BUFFER_DIM];
 
 /* FreeRtos Staff */
 TimerHandle_t xGlobalTimer;
@@ -107,16 +107,19 @@ void RACom::broadcastPhase() {
       }
     }
 
-    if(getSucc() == MY_ID) {
+    Serial.print(F("<--- Message received after broadcast: "));
+    Serial.println(_buffer);
+
+    if(/* getSucc() == MY_ID */ setRecvPosArray() == MY_ID) {
       currSucc = MY_ID;
       isMyTurn = true;
     } 
 
-    Serial.print(F("<--- Message received after broadcast: "));
-    Serial.println(_buffer);
+    //Serial.print(F("<--- Message received after broadcast: "));
+    //Serial.println(_buffer);
 
     // set recvPos array with outside data
-    setRecvPosArray();
+    //setRecvPosArray();
 
   } 
   while(strlen(_buffer) == 0 || isMyTurn == true);
@@ -144,9 +147,9 @@ void RACom::comAlgo() {
         Serial.println(_buffer);
 
         // set recvPos array with outside data
-        setRecvPosArray();
+        //setRecvPosArray();
         
-        if(getSucc() == MY_ID) {
+        if(/* getSucc() == MY_ID */ setRecvPosArray() == MY_ID) {
           currSucc = MY_ID;
           broadcastPhase();
         }
@@ -250,9 +253,9 @@ void RACom::broadcast() {
   //resetNextPosArray();
 }
 
-int RACom::getSucc() {
+/* int RACom::getSucc() {
   if( strlen(_buffer) != 0 ) {
-    char copy[50];
+    char copy[BUFFER_DIM];
     size_t len = sizeof(copy);
     strncpy(copy, _buffer, len);
     copy[len-1] = '\0';
@@ -270,14 +273,15 @@ int RACom::getSucc() {
   }
 
   return NUM_ANTS + 1; // not existing ANT
-}
+} */
 
-void RACom::setRecvPosArray() {
+int RACom::setRecvPosArray() {
   if( strlen(_buffer) != 0  ) {
     int mit;
     int ss;
+    int succ;
 
-    char copy[50];
+    char copy[BUFFER_DIM];
     size_t len = sizeof(copy);
     strncpy(copy, _buffer, len);
     copy[len-1] = '\0';
@@ -291,6 +295,10 @@ void RACom::setRecvPosArray() {
 
       if(i == 0) {
         mit = atoi(pch);
+      }
+
+      if(i == 1) {
+        succ = atoi(pch);
       }
 
       if(i >= 2 && i <= 9) {
@@ -328,6 +336,10 @@ void RACom::setRecvPosArray() {
       i++;
     }
 
+    return succ;
+
+  } else {
+    return NUM_ANTS + 1; // not existing ANT
   }
 } 
 
