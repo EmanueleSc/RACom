@@ -115,6 +115,8 @@ void RACom::broadcastPhase() {
       isMyTurn = true;
     } 
 
+    vTaskDelay( TASK_DELAY );
+    
   } 
   while(strlen(_buffer) == 0 || isMyTurn == true);
 
@@ -151,7 +153,9 @@ void RACom::comAlgo() {
   else {
     // I'm the only one in the network
     broadcastPhase();
-  } 
+  }
+
+  vTaskDelay( TASK_DELAY ); 
   
 }
 

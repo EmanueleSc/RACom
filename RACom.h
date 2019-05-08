@@ -21,7 +21,8 @@ enum
     RESPONSE_TIMEOUT = 400 / portTICK_PERIOD_MS, // 400 millisec for test
     NUM_NEXT_POS = 8,
     SPECIAL_ANT_ID = 3,
-    BUFFER_DIM = 60
+    BUFFER_DIM = 60,
+    TASK_DELAY = 10 / portTICK_PERIOD_MS
 };
 
 class RACom {
