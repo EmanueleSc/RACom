@@ -107,15 +107,14 @@ void RACom::broadcastPhase() {
       }
     }
 
-    Serial.print(F("<--- Message received after broadcast: "));
-    Serial.println(_buffer);
-
     if(setRecvPosArray() == MY_ID) {
       currSucc = MY_ID;
       isMyTurn = true;
     } 
 
     vTaskDelay( TASK_DELAY );
+    Serial.print(F("<--- Message received after broadcast: "));
+    Serial.println(_buffer);
     
   } 
   while(strlen(_buffer) == 0 || isMyTurn == true);
@@ -145,6 +144,8 @@ void RACom::comAlgo() {
         if(setRecvPosArray() == MY_ID) {
           currSucc = MY_ID;
           broadcastPhase();
+        } else {
+          _buffer[0] = '\0';
         }
       }
 
