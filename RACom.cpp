@@ -144,9 +144,10 @@ void RACom::comAlgo() {
         if(setRecvPosArray() == MY_ID) {
           currSucc = MY_ID;
           broadcastPhase();
-        } else {
-          _buffer[0] = '\0';
         }
+          
+        _buffer[0] = '\0';
+        
       }
 
     }
