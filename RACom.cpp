@@ -186,6 +186,10 @@ void RACom::setStartAndStop(byte state) {
   startAndStop = state;
 }
 
+void RACom::getStartAndStop() {
+  return startAndStop;
+}
+
 void RACom::setMyCurrentPosition(byte pos) {
   myCurrentPosition = pos;
 }
@@ -289,11 +293,13 @@ int RACom::setRecvPosArray() {
         ss = atoi(pch);
         
         if(ss == 0) {
+          startAndStop = ss;
           // Suspend RGB and Motion tasks
           vTaskSuspend( *taskRGB );
           vTaskSuspend( *taskMotion );
         }
         else if(ss == 1) {
+          startAndStop = ss;
           // Resume RGB and Motion tasks
           vTaskResume( *taskRGB );
           vTaskResume( *taskMotion );
