@@ -56,7 +56,8 @@ void RACom::init(byte id, byte number_of_ants) {
     currSucc = MY_ID;
     
     _bufsize = sizeof(_buffer)/sizeof(char);
-    _buffer[0] = '\0'; // flush the buffer
+    //_buffer[0] = '\0'; // flush the buffer
+    memset(_buffer, 0, sizeof _buffer);
 
     // Start softweare timers
     resumedTasks = false;
@@ -93,7 +94,8 @@ void RACom::broadcastPhase() {
     findMyNext();
     broadcast();
     startResponseTimer();
-    _buffer[0] = '\0';
+    //_buffer[0] = '\0';
+    memset(_buffer, 0, sizeof _buffer);
 
     // iterate until response timeout is not expired
     while( !responseTimer_expired ) {
@@ -146,8 +148,8 @@ void RACom::comAlgo() {
           broadcastPhase();
         }
           
-        _buffer[0] = '\0';
-        
+        //_buffer[0] = '\0';
+        memset(_buffer, 0, sizeof _buffer);
       }
 
     }
