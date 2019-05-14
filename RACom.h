@@ -22,9 +22,7 @@ enum
     NUM_NEXT_POS = 8,
     SPECIAL_ANT_ID = 3,
     BUFFER_DIM = 60,
-    TASK_DELAY = 10 / portTICK_PERIOD_MS,
-    EN_A = 10,
-    EN_B = 5
+    TASK_DELAY = 10 / portTICK_PERIOD_MS
 };
 
 class RACom {

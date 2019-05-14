@@ -251,12 +251,6 @@ void RACom::broadcast() {
   MySerial.print(myCurrentPosition); // current position
   Serial.print(myCurrentPosition);
 
-  /* MySerial.print('#'); // separator
-  Serial.print('#');
-
-  MySerial.print('&'); // end data char (like CRC)
-  Serial.print('&'); */
-
   MySerial.print('$'); // end char
 
 }
@@ -276,12 +270,8 @@ int RACom::setRecvPosArray() {
     int i = 0;
     
     while (pch != NULL) {
-      // Frame example: @1#2#225#225#225#225#225#225#225#225#1#225 # & $
-      // @ mit # succ # next_pos # next_pos # next_pos # next_pos # next_pos # next_pos # next_pos # next_pos # start_stop # current_pos # & $
-
-      /* if(i == 12) {
-        break;
-      } */
+      // Frame example: @1#2#225#225#225#225#225#225#225#225#1#225$
+      // @ mit # succ # next_pos # next_pos # next_pos # next_pos # next_pos # next_pos # next_pos # next_pos # start_stop # current_pos $
 
       if(i == 0) {
         mit = atoi(pch);
@@ -304,30 +294,9 @@ int RACom::setRecvPosArray() {
         
         if(ss == 0) {
           startAndStop = (byte) ss;
-          /* analogWrite(EN_B, 0);      
-          analogWrite(EN_A, 0); */
-          // Suspend RGB and Motion tasks
-          // vTaskSuspend( *taskRGB );
-          // vTaskSuspend( *taskMotion );
         }
         else if(ss == 1) {
           startAndStop = (byte) ss;
-          // Resume RGB and Motion tasks
-          // vTaskResume( *taskRGB );
-          // vTaskResume( *taskMotion );
-          
-          //Natasha
-          /* if(MY_ID == 1) {
-            analogWrite(EN_B, 115);  //Right
-            analogWrite(EN_A, 98);   //Left
-          }
-
-          //Skriniar
-          if(MY_ID == 2) {
-            analogWrite(EN_B, 156);  //Right
-            analogWrite(EN_A, 87);   //Left
-          } */
-          
         }
       }
 
