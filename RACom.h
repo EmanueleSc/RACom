@@ -39,7 +39,6 @@ public:
     byte* getRecvPosArray(byte num_ant);
     void setTaskHandle(TaskHandle_t* xHandleRGB, TaskHandle_t* xHandleMotion);
     void setStartAndStop(byte state); // 0 = stop, 1 = start
-    byte getStartAndStop();
     void setMyCurrentPosition(byte pos);
     byte getCurrentPosOfAnt(byte num_ant);
 
