@@ -302,13 +302,26 @@ int RACom::setRecvPosArray() {
           analogWrite(EN_B, 0);      
           analogWrite(EN_A, 0);
           // Suspend RGB and Motion tasks
-          vTaskSuspend( *taskRGB );
-          vTaskSuspend( *taskMotion );
+          // vTaskSuspend( *taskRGB );
+          // vTaskSuspend( *taskMotion );
         }
         else if(ss == 1) {
           // Resume RGB and Motion tasks
-          vTaskResume( *taskRGB );
-          vTaskResume( *taskMotion );
+          // vTaskResume( *taskRGB );
+          // vTaskResume( *taskMotion );
+          
+          //Natasha
+          if(MY_ID == 1) {
+            analogWrite(EN_B, 115);  //Right
+            analogWrite(EN_A, 98);   //Left
+          }
+
+          //Skriniar
+          if(MY_ID == 2) {
+            analogWrite(EN_B, 156);  //Right
+            analogWrite(EN_A, 87);   //Left
+          }
+          
         }
       }
 
