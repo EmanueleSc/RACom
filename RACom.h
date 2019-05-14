@@ -22,7 +22,9 @@ enum
     NUM_NEXT_POS = 8,
     SPECIAL_ANT_ID = 3,
     BUFFER_DIM = 60,
-    TASK_DELAY = 10 / portTICK_PERIOD_MS
+    TASK_DELAY = 10 / portTICK_PERIOD_MS,
+    EN_A = 10,
+    EN_B = 5
 };
 
 class RACom {
@@ -37,7 +39,7 @@ public:
     byte* getRecvPosArray(byte num_ant);
     void setTaskHandle(TaskHandle_t* xHandleRGB, TaskHandle_t* xHandleMotion);
     void setStartAndStop(byte state); // 0 = stop, 1 = start
-    void getStartAndStop();
+    byte getStartAndStop();
     void setMyCurrentPosition(byte pos);
     byte getCurrentPosOfAnt(byte num_ant);
 

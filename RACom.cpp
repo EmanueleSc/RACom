@@ -186,7 +186,7 @@ void RACom::setStartAndStop(byte state) {
   startAndStop = state;
 }
 
-void RACom::getStartAndStop() {
+byte RACom::getStartAndStop() {
   return startAndStop;
 }
 
@@ -270,7 +270,7 @@ int RACom::setRecvPosArray() {
     int i = 0;
     
     while (pch != NULL) {
-      // Frame example: @ 1 # 2 # 225 # 225 # 225 # 225 # 225 # 225 # 225 # 225 # 1 # 225 $
+      // Frame example: @1#2#225#225#225#225#225#225#225#225#1#225$
       // @ mit # succ # next_pos # next_pos # next_pos # next_pos # next_pos # next_pos # next_pos # next_pos # start_stop # current_pos $
 
       if(i == 0) {
@@ -294,6 +294,8 @@ int RACom::setRecvPosArray() {
         
         if(ss == 0) {
           startAndStop = ss;
+          analogWrite(EN_B, 0);      
+          analogWrite(EN_A, 0);
           // Suspend RGB and Motion tasks
           vTaskSuspend( *taskRGB );
           vTaskSuspend( *taskMotion );
