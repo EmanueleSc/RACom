@@ -55,9 +55,9 @@ void RACom::init(byte id, byte number_of_ants) {
     NUM_ANTS = number_of_ants;
     currSucc = MY_ID;
     
-    _bufsize = sizeof(_buffer)/sizeof(char);
+    _bufsize = sizeof _buffer;
     //_buffer[0] = '\0'; // flush the buffer
-    memset(_buffer, 0, sizeof _buffer);
+    memset(_buffer, 0, _bufsize);
 
     // Start softweare timers
     resumedTasks = false;
@@ -95,7 +95,7 @@ void RACom::broadcastPhase() {
     broadcast();
     startResponseTimer();
     //_buffer[0] = '\0';
-    memset(_buffer, 0, sizeof _buffer);
+    memset(_buffer, 0, _bufsize);
 
     // iterate until response timeout is not expired
     while( !responseTimer_expired ) {
@@ -149,7 +149,7 @@ void RACom::comAlgo() {
         }
           
         //_buffer[0] = '\0';
-        memset(_buffer, 0, sizeof _buffer);
+        memset(_buffer, 0, _bufsize);
       }
 
     }
@@ -247,11 +247,11 @@ void RACom::broadcast() {
   MySerial.print(myCurrentPosition); // current position
   Serial.print(myCurrentPosition);
 
-  MySerial.print('#'); // separator
+  /* MySerial.print('#'); // separator
   Serial.print('#');
 
   MySerial.print('&'); // end data char (like CRC)
-  Serial.print('&');
+  Serial.print('&'); */
 
   MySerial.print('$'); // end char
 
@@ -275,9 +275,9 @@ int RACom::setRecvPosArray() {
       // Frame example: @1#2#225#225#225#225#225#225#225#225#1#225 # & $
       // @ mit # succ # next_pos # next_pos # next_pos # next_pos # next_pos # next_pos # next_pos # next_pos # start_stop # current_pos # & $
 
-      if(i == 12) {
+      /* if(i == 12) {
         break;
-      }
+      } */
 
       if(i == 0) {
         mit = atoi(pch);
