@@ -186,6 +186,10 @@ void RACom::setStartAndStop(byte state) {
   startAndStop = state;
 }
 
+byte RACom::getStartAndStop() {
+  return startAndStop;
+}
+
 void RACom::setMyCurrentPosition(byte pos) {
   myCurrentPosition = pos;
 }
@@ -299,19 +303,21 @@ int RACom::setRecvPosArray() {
         ss = atoi(pch);
         
         if(ss == 0) {
-          analogWrite(EN_B, 0);      
-          analogWrite(EN_A, 0);
+          startAndStop = (byte) ss;
+          /* analogWrite(EN_B, 0);      
+          analogWrite(EN_A, 0); */
           // Suspend RGB and Motion tasks
           // vTaskSuspend( *taskRGB );
           // vTaskSuspend( *taskMotion );
         }
         else if(ss == 1) {
+          startAndStop = (byte) ss;
           // Resume RGB and Motion tasks
           // vTaskResume( *taskRGB );
           // vTaskResume( *taskMotion );
           
           //Natasha
-          if(MY_ID == 1) {
+          /* if(MY_ID == 1) {
             analogWrite(EN_B, 115);  //Right
             analogWrite(EN_A, 98);   //Left
           }
@@ -320,7 +326,7 @@ int RACom::setRecvPosArray() {
           if(MY_ID == 2) {
             analogWrite(EN_B, 156);  //Right
             analogWrite(EN_A, 87);   //Left
-          }
+          } */
           
         }
       }
