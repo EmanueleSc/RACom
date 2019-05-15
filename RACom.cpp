@@ -3,7 +3,7 @@
 static SoftwareSerial MySerial (RX, TX);
 //static NeoSWSerial MySerial (RX, TX);
 
-static byte initFlag = 0;
+static byte initFlag;
 static byte MY_ID;
 static byte NUM_ANTS; // Number of ants in the antNet
 static byte currSucc;
@@ -60,6 +60,7 @@ void RACom::init(byte id, byte number_of_ants) {
     memset(_buffer, 0, _bufsize);
 
     // Start softweare timers
+    initFlag = 0;
     resumedTasks = false;
     globalTimer_expired = false;
     responseTimer_expired = false;
